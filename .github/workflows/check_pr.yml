@@ -1,4 +1,4 @@
-name: build_wheels
+name: check_pr
 
 # Controls when the action will run.
 on:
@@ -18,6 +18,9 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       - uses: actions/checkout@v2
+      
+      - name: GitHub Action for pylint
+        uses: cclauss/GitHub-Action-for-pylint@0.7.0
 
       - name: create wheel
         run: |
