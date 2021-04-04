@@ -1,6 +1,9 @@
 [build-system]
 requires = [
     "setuptools>=42",
-    "wheel"
+    "wheel",
+    "grpcio==1.36.1",
+    "pygame==2.0.1",
+    "pygame-gui==0.5.7"
 ]
 build-backend = "setuptools.build_meta"
