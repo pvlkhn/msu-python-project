@@ -21,8 +21,7 @@ jobs:
         with:
           path: pong_game
 
-      - uses: RalfG/python-wheels-manylinux-build@v0.3.3
-        with:
-          python-versions: 'cp36-cp36m cp37-cp37m'
-          package-path: 'pong_game'
-          pip-wheel-args: '-w ./dist --no-deps'
+      - name: create wheel
+        run: |
+            python3 setup.py bdist_wheel --universal
+            pip3 install dist/pong_game-0.0.0-py2.py3-none-any.whl
