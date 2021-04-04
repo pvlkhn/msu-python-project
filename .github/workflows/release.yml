@@ -21,11 +21,14 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - uses: remorses/bump-version@js
-        with:
-            version_file: ./client/VERSION
-        env:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: bump verison
+        run: |
+          python3 bump_version.py
+          git config user.name "bump_version"
+          git config user.email "bump-version@version.com"
+          git remote add publisher ***github.com/pvlkhn/msu-python-project.git
+          git add -A
+          git commit -v -m  Version 1.0.1 [skip ci]
 
 
       - name: create wheel
