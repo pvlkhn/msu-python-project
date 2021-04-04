@@ -1,0 +1,42 @@
+name: release
+
+# Controls when the action will run.
+on:
+  # Triggers the workflow on push or pull request events but only for the master branch
+  push:
+    branches: [ master ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+
+jobs:
+  release:
+    name: "Release"
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: bump verison
+        run: |
+          python3 bump_version.py
+          git config user.name "bump_version"
+          git config user.email "bump-version@version.com"
+          git remote add publisher ***github.com/pvlkhn/msu-python-project.git
+          git add -A
+          git commit -v -m "bump version [skip ci]"
+
+
+      - name: create wheel
+        run: |
+          python3 setup.py bdist_wheel --universal
+          pip3 install dist/*.whl
+
+      - name: Publish wheels to PyPI
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
+        run: |
+          pip3 install twine
+          twine upload dist/*.whl
