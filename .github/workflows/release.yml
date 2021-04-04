@@ -21,10 +21,10 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Bump version
-        uses: remorses/bump-version@js
+      - uses: remorses/bump-version@js
         with:
             version_file: ./client/VERSION
+        env:
             github_token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: create wheel
