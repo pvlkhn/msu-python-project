@@ -24,7 +24,7 @@ jobs:
       - name: create wheel
         run: |
           python3 setup.py bdist_wheel --universal
-          pip3 install dist/pong_game-0.0.0-py2.py3-none-any.whl
+          pip3 install dist/csmsu2020_pong_game-0.0.0-py2.py3-none-any.whl
 
       - name: Publish wheels to PyPI
         env:
