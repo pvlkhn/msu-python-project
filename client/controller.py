@@ -1,36 +1,46 @@
 
 class Controller:
-    def __init__(self, game_state, history_storage, server_connetion):
+
+    MOVE_KEYSYMS = {'Up', 'Left', 'Down', 'Right'}
+    ACTION_LAG = 5
+
+    def __init__(self, game_state, platform_index,
+                 history_storage, server_connetion):
         self.current_game_state = game_state
+        self.platform_index = platform_index
         self.history_storage = history_storage
         self.server_connetion = server_connetion
 
-    def on_key_pressed(self, key):
-        print(key)
-        if self.should_move(key):
+    def on_key_pressed(self, event):
+        if event.keysym in Controller.MOVE_KEYSYMS:
             current_frame = self.current_game_state.get_current_frame()
-            self.history_storage.add_event(key, current_frame)
-            self.server_connetion.async_send(key)
+            event = (self.platform_index, event.keysym)
+            action_frame = current_frame + Controller.ACTION_LAG
+            self.history_storage.add_event(action_frame, event)
+            self.server_connetion.async_send(action_frame, event)
 
     def on_frame_rendered(self):
-        self.on_time_tick(self.current_game_state)
         current_frame = self.current_game_state.get_current_frame()
-        self.history_storage.store_state(self.current_game_state, current_frame)
+        self.on_time_tick(self.current_game_state)
+        self.history_storage.store_state(
+            frame=current_frame,
+            state=self.current_game_state
+        )
 
     def on_time_tick(self, game_state):
         current_frame = game_state.get_current_frame()
+        game_state.increment_current_frame()
         events = self.history_storage.get_events(current_frame)
-        for event in events:
-            if self.should_move_platform(event):
-                game_state.get_current_player_platform()  # TODO: move
+        for platform_index, event in events:
+            if event in Controller.MOVE_KEYSYMS:
+                game_state.get_platform(self.platform_index).move(event)
 
         game_state.get_ball().move()  # TODO: handle intersection
 
-        game_state.increment_current_frame()
         return game_state
 
-    def should_move(self, event):
-        return True
+    def convert_keycode_to_move(self, keycode):
+        return None
 
     def on_sync_with_server(self):
         recieved_events = self.server_connetion.read_sync()

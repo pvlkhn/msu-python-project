@@ -19,7 +19,10 @@ class Ball(object):
         return (top_left_x, top_left_y, bottom_right_x, bottom_right_y)
 
     def move(self):
-        self.pos = (self.pos[0] + self.direction[0], self.pos[1] + self.direction[1])
+        self.pos = (
+            self.pos[0] + self.direction[0],
+            self.pos[1] + self.direction[1]
+        )
 
 
 class Platform(object):
@@ -27,12 +30,14 @@ class Platform(object):
     WIDTH = 100
     HEIGHT = 20
     PADDING = 40
+    DEFAULT_SPEED = 5
 
     def __init__(self, pos_x, pos_y):
         self.pos = (pos_x, pos_y)
         self.direction = (0, 0)
         self.angle = 0
         self.rotation_speed = 0
+        self.horizontal_speed = Platform.DEFAULT_SPEED
 
     def get_box(self):
         top_left_x = self.pos[0] - Platform.WIDTH / 2
@@ -40,6 +45,14 @@ class Platform(object):
         bottom_right_x = self.pos[0] + Platform.WIDTH / 2
         bottom_right_y = self.pos[1] + Platform.HEIGHT / 2
         return (top_left_x, top_left_y, bottom_right_x, bottom_right_y)
+
+    def move(self, direction):
+        if direction == 'Left':
+            self.pos = (self.pos[0] - self.horizontal_speed, self.pos[1])
+        elif direction == 'Right':
+            self.pos = (self.pos[0] + self.horizontal_speed, self.pos[1])
+        else:
+            assert direction in {'Down', 'Up'}  # TODO: implement rotation
 
 
 class GameState(object):
@@ -61,11 +74,12 @@ class GameState(object):
     def increment_current_frame(self):
         self.current_frame += 1
 
-    def get_platform1(self):
-        return self.platform1
-
-    def get_platform2(self):
-        return self.platform2
+    def get_platform(self, idx):
+        assert idx in {0, 1}
+        if idx == 0:
+            return self.platform1
+        else:
+            return self.platform2
 
     def get_ball(self):
         return self.ball
@@ -81,6 +95,9 @@ class HistoryStorage(object):
 
     def add_event(self, frame, event):
         self.events_per_frame[frame].append(event)
+
+    def get_events(self, frame):
+        return self.events_per_frame[frame]
 
     def store_state(self, frame, state):
         self.events_per_frame[frame] = deepcopy(state)
@@ -98,14 +115,12 @@ class HistoryStorage(object):
             del self.states_per_frame[frame]
             self.min_stored_frame += 1
 
-    def get_events(self, frame):
-        return self.events_per_frame[frame]
 
 class NetworkConnection(object):
     def __init__(self):
         pass
 
-    def async_send(self, data):
+    def async_send(self, frame, data):
         pass
 
     def start_async_read(self):

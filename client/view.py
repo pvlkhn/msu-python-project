@@ -1,18 +1,26 @@
 import tkinter
-import os
+
 
 class GameWindow(tkinter.Frame):
     def __init__(self, game_state, controller, fps, polling_ts, master):
         super().__init__(master=master)
 
-        self.bind("<KeyPress>", controller.on_key_pressed)
-        self.game_field = GameField(game_state, controller, fps, polling_ts, self)
+        self.game_field = GameField(
+            game_state=game_state,
+            controller=controller,
+            fps=fps,
+            polling_ts=polling_ts,
+            master=self
+        )
 
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(0, weight=1, uniform="yep")
 
         self.game_field.redraw()
         self.game_field.grid(row=0, column=0, sticky="NWSE")
+
+        self.focus_set()
+        self.bind("<KeyPress>", controller.on_key_pressed)
 
 
 class GameField(tkinter.Canvas):
@@ -29,8 +37,8 @@ class GameField(tkinter.Canvas):
     def redraw(self):
         self.delete("all")
 
-        self.create_rectangle(*self.game_state.get_platform1().get_box())
-        self.create_rectangle(*self.game_state.get_platform2().get_box())
+        self.create_rectangle(*self.game_state.get_platform(0).get_box())
+        self.create_rectangle(*self.game_state.get_platform(1).get_box())
         self.create_oval(*self.game_state.get_ball().get_box())
 
     def sync_with_server(self):

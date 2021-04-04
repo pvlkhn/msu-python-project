@@ -18,7 +18,12 @@ class Application(tkinter.Tk):
         game_state = GameState(Application.WIDTH, Application.HEIGHT)
         history_storage = HistoryStorage()
         server_connetion = NetworkConnection()
-        controller = Controller(game_state, history_storage, server_connetion)
+        controller = Controller(
+            game_state=game_state,
+            platform_index=0,  # TODO: use 0 for host, 1 for connected
+            history_storage=history_storage,
+            server_connetion=server_connetion
+        )
 
         self.title("Pong game")
         self.minsize(Application.WIDTH, Application.HEIGHT)
