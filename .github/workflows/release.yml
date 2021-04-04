@@ -5,7 +5,7 @@ name: build_wheels
 # Controls when the action will run.
 on:
   # Triggers the workflow on push or pull request events but only for the master branch
-  pull_request:
+  push:
     branches: [ master ]
 
   # Allows you to run this workflow manually from the Actions tab
@@ -21,3 +21,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: RalfG/python-wheels-manylinux-build@v0.3.3
+
+      - name: Publish a Python distribution to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          user: __token__
+          password: ${{ secrets.PYPI_API_TOKEN }}
