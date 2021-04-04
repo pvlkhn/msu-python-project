@@ -1,12 +1,15 @@
 from collections import defaultdict
+from copy import deepcopy
 
 
 class Ball(object):
+
     RADIUS = 10
+    DEFAULT_SPEED = 5
 
     def __init__(self, pos_x, pos_y):
         self.pos = (pos_x, pos_y)
-        self.direction = (0, 1)
+        self.direction = (0, Ball.DEFAULT_SPEED)
 
     def get_box(self):
         top_left_x = self.pos[0] - Ball.RADIUS
@@ -15,8 +18,12 @@ class Ball(object):
         bottom_right_y = self.pos[1] + Ball.RADIUS
         return (top_left_x, top_left_y, bottom_right_x, bottom_right_y)
 
+    def move(self):
+        self.pos = (self.pos[0] + self.direction[0], self.pos[1] + self.direction[1])
+
 
 class Platform(object):
+
     WIDTH = 100
     HEIGHT = 20
     PADDING = 40
@@ -38,8 +45,14 @@ class Platform(object):
 class GameState(object):
     def __init__(self, window_width, window_height):
         self.ball = Ball(window_width / 2, window_height / 2)
-        self.platform1 = Platform(window_width / 2, window_height - Platform.PADDING)
-        self.platform2 = Platform(window_width / 2, Platform.PADDING)
+        self.platform1 = Platform(
+            pos_x=(window_width / 2),
+            pos_y=(window_height - Platform.PADDING)
+        )
+        self.platform2 = Platform(
+            pos_x=(window_width / 2),
+            pos_y=Platform.PADDING
+        )
         self.current_frame = 0
 
     def get_current_frame(self):
@@ -66,12 +79,12 @@ class HistoryStorage(object):
         self.states_per_frame = {}
         self.min_stored_frame = 0
 
-    def add_event(self, v, event):
+    def add_event(self, frame, event):
         self.events_per_frame[frame].append(event)
 
     def store_state(self, frame, state):
-        self.events_per_frame[frame] = deeepcopy(state)
-        if len(self.events_per_frame) > MAX_STORED_FRAMES:
+        self.events_per_frame[frame] = deepcopy(state)
+        if len(self.events_per_frame) > HistoryStorage.MAX_STORED_FRAMES:
             raise RuntimeError("Server doesn't respond for too long")
 
     def get_game_state(self, frame):
@@ -79,12 +92,14 @@ class HistoryStorage(object):
 
     def cleanup(self, frame):
         if self.min_stored_frame == frame:
-            assert frame in events_per_frame
-            assert frame in states_per_frame
+            assert frame in self.events_per_frame
+            assert frame in self.states_per_frame
             del self.events_per_frame[frame]
             del self.states_per_frame[frame]
             self.min_stored_frame += 1
 
+    def get_events(self, frame):
+        return self.events_per_frame[frame]
 
 class NetworkConnection(object):
     def __init__(self):

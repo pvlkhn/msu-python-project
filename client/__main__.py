@@ -23,12 +23,13 @@ class Application(tkinter.Tk):
         self.title("Pong game")
         self.minsize(Application.WIDTH, Application.HEIGHT)
 
-        window = GameWindow(game_state, controller, 100, master=self)
+        window = GameWindow(game_state, controller, 40, 100, master=self)
         window.grid(sticky="NWSE")
 
 
 def main():
     Application().mainloop()
+
 
 if __name__ == '__main__':
     main()

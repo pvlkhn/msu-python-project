@@ -1,15 +1,13 @@
 import tkinter
-from functools import partial
+import os
 
 class GameWindow(tkinter.Frame):
-    def __init__(self, game_state, controller, polling_ts, master):
+    def __init__(self, game_state, controller, fps, polling_ts, master):
         super().__init__(master=master)
 
-        self.game_field = GameField(game_state, controller, polling_ts, self)
+        self.bind("<KeyPress>", controller.on_key_pressed)
+        self.game_field = GameField(game_state, controller, fps, polling_ts, self)
 
-        self.redraw()
-
-    def redraw(self):
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(0, weight=1, uniform="yep")
 
@@ -17,17 +15,16 @@ class GameWindow(tkinter.Frame):
         self.game_field.grid(row=0, column=0, sticky="NWSE")
 
 
-
 class GameField(tkinter.Canvas):
-    def __init__(self, game_state, controller, polling_ts, master):
+    def __init__(self, game_state, controller, fps, polling_ts, master):
         super().__init__(master=master)
 
         self.game_state = game_state
-        self.bind("<KeyPress>", controller.on_key_pressed)
         self.polling_ts = polling_ts
         self.controller = controller
         self.sync_with_server()
-
+        self.fps = fps
+        self.start_redrawing()
 
     def redraw(self):
         self.delete("all")
@@ -36,7 +33,11 @@ class GameField(tkinter.Canvas):
         self.create_rectangle(*self.game_state.get_platform2().get_box())
         self.create_oval(*self.game_state.get_ball().get_box())
 
-
     def sync_with_server(self):
         self.controller.on_sync_with_server()
         self.after(self.polling_ts, self.sync_with_server)
+
+    def start_redrawing(self):
+        self.redraw()
+        self.controller.on_frame_rendered()
+        self.after(int(1000 / self.fps), self.start_redrawing)
