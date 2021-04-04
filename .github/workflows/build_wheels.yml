@@ -2,7 +2,7 @@
 
 name: CI
 
-# Controls when the action will run. 
+# Controls when the action will run.
 on:
   # Triggers the workflow on push or pull request events but only for the master branch
   push:
@@ -22,5 +22,10 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+
+      - uses: actions/checkout@v2
+      - name: Get tag
+        uses: little-core-labs/get-git-tag@v3.0.2
+        id: tagName
+
       - uses: RalfG/python-wheels-manylinux-build@v0.3.3
