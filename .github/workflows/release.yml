@@ -23,7 +23,7 @@ jobs:
 
       - uses: remorses/bump-version@js
         with:
-            version_file: ./client/VERSIONs
+            version_file: ./client/VERSION
         env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
