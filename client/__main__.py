@@ -1,6 +1,6 @@
-import view
-import controller
-import model
+import .view
+import .controller
+import .model
 
 
 def main():
