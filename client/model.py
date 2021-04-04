@@ -59,21 +59,31 @@ class GameState(object):
 
 
 class HistoryStorage(object):
+    MAX_STORED_FRAMES = 600
+
     def __init__(self):
         self.events_per_frame = defaultdict(list)
         self.states_per_frame = {}
+        self.min_stored_frame = 0
 
     def add_event(self, v, event):
         self.events_per_frame[frame].append(event)
 
     def store_state(self, frame, state):
         self.events_per_frame[frame] = deeepcopy(state)
+        if len(self.events_per_frame) > MAX_STORED_FRAMES:
+            raise RuntimeError("Server doesn't respond for too long")
 
     def get_game_state(self, frame):
         return self.events_per_frame[frame]
 
-    def cleanup(self, ts):
-        pass # remove old frame if ts == min
+    def cleanup(self, frame):
+        if self.min_stored_frame == frame:
+            assert frame in events_per_frame
+            assert frame in states_per_frame
+            del self.events_per_frame[frame]
+            del self.states_per_frame[frame]
+            self.min_stored_frame += 1
 
 
 class NetworkConnection(object):
