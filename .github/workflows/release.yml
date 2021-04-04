@@ -28,7 +28,7 @@ jobs:
           git config user.email "bump-version@version.com"
           git remote add publisher ***github.com/pvlkhn/msu-python-project.git
           git add -A
-          git commit -v -m  Version 1.0.1 [skip ci]
+          git commit -v -m "Version 1.0.1 [skip ci]"
 
 
       - name: create wheel
