@@ -23,12 +23,13 @@ jobs:
 
       - name: create wheel
         run: |
-            python3 setup.py bdist_wheel --universal
-            pip3 install dist/pong_game-0.0.0-py2.py3-none-any.whl
+          python3 setup.py bdist_wheel --universal
+          pip3 install dist/pong_game-0.0.0-py2.py3-none-any.whl
 
       - name: Publish wheels to PyPI
         env:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
         run: |
+          pip3 install twine
           twine upload dist/*.whl

@@ -21,5 +21,5 @@ jobs:
 
       - name: create wheel
         run: |
-            python3 setup.py bdist_wheel --universal
-            pip3 install dist/pong_game-0.0.0-py2.py3-none-any.whl
+          python3 setup.py bdist_wheel --universal
+          pip3 install dist/pong_game-0.0.0-py2.py3-none-any.whl
