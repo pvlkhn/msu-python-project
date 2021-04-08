@@ -30,9 +30,9 @@ class GameField(tkinter.Canvas):
         self.game_state = game_state
         self.polling_ts = polling_ts
         self.controller = controller
-        self.sync_with_server()
         self.fps = fps
         self.start_redrawing()
+        self.sync_with_server()
 
     def redraw(self):
         self.delete("all")

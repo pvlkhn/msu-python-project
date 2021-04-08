@@ -1,5 +1,6 @@
 from collections import defaultdict
 from copy import deepcopy
+import random
 
 
 class Ball(object):
@@ -9,7 +10,11 @@ class Ball(object):
 
     def __init__(self, pos_x, pos_y):
         self.pos = (pos_x, pos_y)
-        self.direction = (0, Ball.DEFAULT_SPEED)
+        self.direction = (0, 0)
+        self.moves_count = 0
+
+    def get_pos(self):
+        return self.pos
 
     def get_box(self):
         top_left_x = self.pos[0] - Ball.RADIUS
@@ -23,6 +28,14 @@ class Ball(object):
             self.pos[0] + self.direction[0],
             self.pos[1] + self.direction[1]
         )
+        if self.moves_count > 50:
+            self.direction = (
+                Ball.DEFAULT_SPEED * (random.random() - 0.5),
+                Ball.DEFAULT_SPEED * (random.random() - 0.5)
+            )
+            self.moves_count = 0
+        else:
+            self.moves_count += 1
 
 
 class Platform(object):
@@ -38,6 +51,12 @@ class Platform(object):
         self.angle = 0
         self.rotation_speed = 0
         self.horizontal_speed = Platform.DEFAULT_SPEED
+
+    def get_pos(self):
+        return self.pos
+
+    def get_speed(self):
+        return Platform.DEFAULT_SPEED
 
     def get_box(self):
         top_left_x = self.pos[0] - Platform.WIDTH / 2
@@ -90,8 +109,10 @@ class HistoryStorage(object):
 
     def __init__(self):
         self.events_per_frame = defaultdict(list)
+        self.do_not_store = set()
         self.states_per_frame = {}
-        self.min_stored_frame = 0
+        self.recieved_frames = set()
+        self.min_non_recieved_frame = 0
 
     def add_event(self, frame, event):
         self.events_per_frame[frame].append(event)
@@ -100,20 +121,30 @@ class HistoryStorage(object):
         return self.events_per_frame[frame]
 
     def store_state(self, frame, state):
-        self.events_per_frame[frame] = deepcopy(state)
-        if len(self.events_per_frame) > HistoryStorage.MAX_STORED_FRAMES:
+        self.cleanup()
+
+        self.states_per_frame[frame] = deepcopy(state)
+        if len(self.states_per_frame) > HistoryStorage.MAX_STORED_FRAMES:
+            print(self.states_per_frame)
+            print(self.do_not_store)
             raise RuntimeError("Server doesn't respond for too long")
 
     def get_game_state(self, frame):
-        return self.events_per_frame[frame]
+        return self.states_per_frame[frame]
 
-    def cleanup(self, frame):
-        if self.min_stored_frame == frame:
-            assert frame in self.events_per_frame
-            assert frame in self.states_per_frame
-            del self.events_per_frame[frame]
-            del self.states_per_frame[frame]
-            self.min_stored_frame += 1
+    def cleanup(self):
+        while (
+            self.min_non_recieved_frame in self.recieved_frames
+            and self.min_non_recieved_frame in self.states_per_frame
+        ):
+            self.recieved_frames.remove(self.min_non_recieved_frame)
+            if self.min_non_recieved_frame in self.events_per_frame:
+                del self.events_per_frame[self.min_non_recieved_frame]
+            del self.states_per_frame[self.min_non_recieved_frame]
+            self.min_non_recieved_frame += 1
+
+    def add_recieved_frames(self, frames):
+        self.recieved_frames.update(frames)
 
 
 class NetworkConnection(object):
@@ -128,3 +159,27 @@ class NetworkConnection(object):
 
     def read_sync(self):
         return []
+
+
+class NetworkConnectionMock(object):
+    def __init__(self, strategy):
+        self.strategy = strategy
+        self.last_frame = 0
+
+    def async_send(self, frame, data):
+        pass
+
+    def start_async_read(self):
+        pass
+
+    def read_sync(self):
+        frame, moves = self.strategy.get_moves()
+
+        events_by_frames = {
+            prev_frame: ['PING']
+            for prev_frame in range(self.last_frame, frame)
+        }
+        events_by_frames[frame] = moves
+        self.last_frame = frame + 1
+
+        return events_by_frames

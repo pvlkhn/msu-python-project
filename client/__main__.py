@@ -1,6 +1,6 @@
-from .model import GameState, HistoryStorage, NetworkConnection
+from .model import GameState, HistoryStorage, NetworkConnectionMock
 from .view import GameWindow
-from .controller import Controller
+from .controller import Controller, NaiveStrategy
 
 import tkinter
 
@@ -17,7 +17,8 @@ class Application(tkinter.Tk):
 
         game_state = GameState(Application.WIDTH, Application.HEIGHT)
         history_storage = HistoryStorage()
-        server_connetion = NetworkConnection()
+        naive_strategy = NaiveStrategy(game_state, 1)
+        server_connetion = NetworkConnectionMock(strategy=naive_strategy)
         controller = Controller(
             game_state=game_state,
             platform_index=0,  # TODO: use 0 for host, 1 for connected
