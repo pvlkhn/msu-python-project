@@ -34,13 +34,12 @@ class Ball(object):
 
     def is_intersect(self, platform):
         ball_center = self.pos
-        ball_box = self.get_box()
         platform_box = platform.get_box()
 
         x = np.clip(ball_center[0], platform_box[0], platform_box[2])
         y = np.clip(ball_center[1], platform_box[1], platform_box[3])
 
-        distance = np.sqrt((ball_center[0] - x) ** 2 + (ball_center[1] - y) ** 2)
+        distance = np.linalg.norm((ball_center[0] - x, ball_center[1] - y))
         if distance <= Ball.RADIUS:
             return True
         else:
