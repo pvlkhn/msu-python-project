@@ -17,8 +17,11 @@ class Application(tkinter.Tk):
 
         game_state = GameState(Application.WIDTH, Application.HEIGHT)
         history_storage = HistoryStorage()
-        naive_strategy = NaiveStrategy(game_state, 1)
-        server_connetion = NetworkConnectionMock(strategy=naive_strategy)
+        naive_strategy = NaiveStrategy(game_state, player_idx=1)
+        server_connetion = NetworkConnectionMock(
+            strategy=naive_strategy,
+            latency=0.01
+        )
         controller = Controller(
             game_state=game_state,
             platform_index=0,  # TODO: use 0 for host, 1 for connected
@@ -29,7 +32,13 @@ class Application(tkinter.Tk):
         self.title("Pong game")
         self.minsize(Application.WIDTH, Application.HEIGHT)
 
-        window = GameWindow(game_state, controller, 40, 100, master=self)
+        window = GameWindow(
+            game_state=game_state,
+            controller=controller,
+            fps=40,
+            polling_ts=100,
+            master=self
+        )
         window.grid(sticky="NWSE")
 
 

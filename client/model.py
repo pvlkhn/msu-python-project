@@ -1,6 +1,6 @@
 from collections import defaultdict
 from copy import deepcopy
-import random
+import time
 
 
 class Ball(object):
@@ -10,8 +10,7 @@ class Ball(object):
 
     def __init__(self, pos_x, pos_y):
         self.pos = (pos_x, pos_y)
-        self.direction = (0, 0)
-        self.moves_count = 0
+        self.direction = (1, 1)
 
     def get_pos(self):
         return self.pos
@@ -28,14 +27,6 @@ class Ball(object):
             self.pos[0] + self.direction[0],
             self.pos[1] + self.direction[1]
         )
-        if self.moves_count > 50:
-            self.direction = (
-                Ball.DEFAULT_SPEED * (random.random() - 0.5),
-                Ball.DEFAULT_SPEED * (random.random() - 0.5)
-            )
-            self.moves_count = 0
-        else:
-            self.moves_count += 1
 
 
 class Platform(object):
@@ -87,6 +78,9 @@ class GameState(object):
         )
         self.current_frame = 0
 
+    def copy_from(self, another):
+        self.__dict__ = another.__dict__
+
     def get_current_frame(self):
         return self.current_frame
 
@@ -125,8 +119,6 @@ class HistoryStorage(object):
 
         self.states_per_frame[frame] = deepcopy(state)
         if len(self.states_per_frame) > HistoryStorage.MAX_STORED_FRAMES:
-            print(self.states_per_frame)
-            print(self.do_not_store)
             raise RuntimeError("Server doesn't respond for too long")
 
     def get_game_state(self, frame):
@@ -162,24 +154,46 @@ class NetworkConnection(object):
 
 
 class NetworkConnectionMock(object):
-    def __init__(self, strategy):
+    def __init__(self, strategy, latency):
         self.strategy = strategy
         self.last_frame = 0
+        self.latency = latency
+        self.queue = []
 
     def async_send(self, frame, data):
         pass
 
-    def start_async_read(self):
-        pass
-
-    def read_sync(self):
+    def do_move(self):
         frame, moves = self.strategy.get_moves()
 
+        frame = max(self.last_frame, frame)
         events_by_frames = {
             prev_frame: ['PING']
             for prev_frame in range(self.last_frame, frame)
         }
         events_by_frames[frame] = moves
         self.last_frame = frame + 1
+        self.queue.append((time.time(), events_by_frames))
 
-        return events_by_frames
+    def start_async_read(self):
+        # usally minimal latency is 1 frame
+        # it depends on fps and polling_ts, but usally
+        # async read starts in current frame
+        # but read_sync called in next frame
+        if self.latency > 0:
+            self.do_move()
+
+    def read_sync(self):
+        if self.latency == 0:
+            self.do_move()
+        if len(self.queue) == 0:
+            return {}
+
+        queue_head = self.queue[0]
+        time_diff = time.time() - queue_head[0]
+        if time_diff > self.latency:
+            events = queue_head[1]
+            self.queue = self.queue[1:]
+            return events
+
+        return {}

@@ -22,11 +22,11 @@ class Controller:
         current_frame = self.current_game_state.get_current_frame()
         events = self.history_storage.get_events(current_frame)
         self.server_connetion.async_send(current_frame, events)
-        self.on_time_tick(self.current_game_state, events)
         self.history_storage.store_state(
             frame=current_frame,
             state=self.current_game_state
         )
+        self.on_time_tick(self.current_game_state, events)
 
     @staticmethod
     def on_time_tick(game_state, events):
@@ -65,8 +65,8 @@ class Controller:
             for frame in range(min_frame, current_frame):
                 events = self.history_storage.get_events(frame)
                 game_state = self.on_time_tick(game_state, events)
-                self.history_storage.store_state(frame, game_state)
-            self.game_state = game_state
+                self.history_storage.store_state(frame + 1, game_state)
+            self.current_game_state.copy_from(game_state)
 
 
 class NaiveStrategy(object):
