@@ -47,7 +47,6 @@ class Ball(object):
             return False
 
 
-
 class Platform(object):
 
     WIDTH = 100
