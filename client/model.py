@@ -1,3 +1,5 @@
+import numpy as np
+
 from collections import defaultdict
 from copy import deepcopy
 
@@ -23,6 +25,27 @@ class Ball(object):
             self.pos[0] + self.direction[0],
             self.pos[1] + self.direction[1]
         )
+
+    def reflect(self):
+        self.direction = (
+            self.direction[0],
+            -self.direction[1]
+        )
+
+    def is_intersect(self, platform):
+        ball_center = self.pos
+        ball_box = self.get_box()
+        platform_box = platform.get_box()
+
+        x = np.clip(ball_center[0], platform_box[0], platform_box[2])
+        y = np.clip(ball_center[1], platform_box[1], platform_box[3])
+
+        distance = np.sqrt((ball_center[0] - x) ** 2 + (ball_center[1] - y) ** 2)
+        if distance <= Ball.RADIUS:
+            return True
+        else:
+            return False
+
 
 
 class Platform(object):
