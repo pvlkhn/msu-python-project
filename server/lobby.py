@@ -25,10 +25,13 @@ class LobbyServer(flask.Flask):
             return self.create_game(flask.request.get_json())
 
     def get_game(self, game_id):
-        return self.__games.get(game_id, None)
+        game = self.__games.get(game_id, None)
+        if game is None:
+            return None
+        return {"port": game.port, "settings": game.settings}
 
     def get_all_games(self):
-        return self.__games
+        return {game_id: self.get_game(game_id) for game_id in self.__games.keys()}
 
     def create_game(self, settings):
         def new_id():
@@ -38,6 +41,7 @@ class LobbyServer(flask.Flask):
         while game_id in self.__games:
             game_id = new_id()
 
-        game = GameServer(settings)
-        self.__games[game_id] = game
-        return {"id": game_id, "port": game.get_port()}
+        game = GameServer(game_id, settings)
+        self.__games[game.id] = game
+        game.start()
+        return {"id": game.id, "port": game.port, "settings": game.settings}
