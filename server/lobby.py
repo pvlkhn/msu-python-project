@@ -3,6 +3,8 @@ from string import ascii_uppercase, digits
 
 import flask
 
+from .game import GameServer
+
 
 class LobbyServer(flask.Flask):
     def __init__(self):
@@ -35,6 +37,7 @@ class LobbyServer(flask.Flask):
         game_id = new_id()
         while game_id in self.__games:
             game_id = new_id()
-        # TODO: generate and return connection info
-        self.__games[game_id] = settings
-        return {"id": game_id, "settings": settings}
+
+        game = GameServer(settings)
+        self.__games[game_id] = game
+        return {"id": game_id, "port": game.get_port()}
