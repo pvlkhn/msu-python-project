@@ -115,6 +115,7 @@ class GameState(object):
             )
             self.ball = Ball(self.window_width / 2, self.window_height / 2)
 
+
 class HistoryStorage(object):
     MAX_STORED_FRAMES = 600
 
