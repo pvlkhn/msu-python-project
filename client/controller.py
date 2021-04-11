@@ -35,7 +35,7 @@ class Controller:
             if event in Controller.MOVE_KEYSYMS:
                 game_state.get_platform(self.platform_index).move(event)
 
-        game_state.get_ball().move()  # TODO: handle intersection
+        game_state.move_ball()  # TODO: handle intersection
 
         return game_state
 

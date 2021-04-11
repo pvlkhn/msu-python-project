@@ -1,3 +1,5 @@
+import random
+
 from collections import defaultdict
 from copy import deepcopy
 
@@ -9,7 +11,9 @@ class Ball(object):
 
     def __init__(self, pos_x, pos_y):
         self.pos = (pos_x, pos_y)
-        self.direction = (0, Ball.DEFAULT_SPEED)
+
+        sign = 1 if random.random() < 0.5 else -1
+        self.direction = (0, sign * Ball.DEFAULT_SPEED)
 
     def get_box(self):
         top_left_x = self.pos[0] - Ball.RADIUS
@@ -66,10 +70,19 @@ class GameState(object):
             pos_x=(window_width / 2),
             pos_y=Platform.PADDING
         )
+        self.window_width = window_width
+        self.window_height = window_height
         self.current_frame = 0
+        self.scores = (0, 0)
 
     def get_current_frame(self):
         return self.current_frame
+
+    def get_scores(self):
+        return self.scores
+
+    def get_window_size(self):
+        return (self.window_width, self.window_height)
 
     def increment_current_frame(self):
         self.current_frame += 1
@@ -84,6 +97,23 @@ class GameState(object):
     def get_ball(self):
         return self.ball
 
+    def move_ball(self):
+        self.ball.move()
+        ball_box = self.ball.get_box()
+
+        if ball_box[3] <= 0:
+            self.scores = (
+                self.scores[0],
+                self.scores[1] + 1
+            )
+            self.ball = Ball(self.window_width / 2, self.window_height / 2)
+
+        if ball_box[1] >= self.window_height:
+            self.scores = (
+                self.scores[0] + 1,
+                self.scores[1]
+            )
+            self.ball = Ball(self.window_width / 2, self.window_height / 2)
 
 class HistoryStorage(object):
     MAX_STORED_FRAMES = 600

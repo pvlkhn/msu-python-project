@@ -41,6 +41,15 @@ class GameField(tkinter.Canvas):
         self.create_rectangle(*self.game_state.get_platform(1).get_box())
         self.create_oval(*self.game_state.get_ball().get_box())
 
+        window_size = self.game_state.get_window_size()
+        scores = self.game_state.get_scores()
+        self.create_text(window_size[0] - 10, 10,
+              text=str(scores[0]),
+              justify=tkinter.CENTER, font="Verdana 14")
+        self.create_text(window_size[0] - 10, window_size[1] - 10,
+              text=str(scores[1]),
+              justify=tkinter.CENTER, font="Verdana 14")
+
     def sync_with_server(self):
         self.controller.on_sync_with_server()
         self.after(self.polling_ts, self.sync_with_server)
