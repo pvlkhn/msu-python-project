@@ -39,8 +39,8 @@ class Controller:
         platform0 = game_state.get_platform(0)
         platform1 = game_state.get_platform(1)
 
-        if (ball.is_intersect(platform0) and ball.is_move_to(platform0) or 
-            ball.is_intersect(platform1) and ball.is_move_to(platform1)):
+        if (ball.is_intersect(platform0) and ball.is_move_to(platform0) or
+                ball.is_intersect(platform1) and ball.is_move_to(platform1)):
             ball.reflect()
         ball.move()
 

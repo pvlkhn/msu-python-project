@@ -92,7 +92,6 @@ class Platform(object):
             assert direction in {'Down', 'Up'}  # TODO: implement rotation
 
 
-
 class GameState(object):
     def __init__(self, window_width, window_height):
         self.ball = Ball(window_width / 2, window_height / 2)
