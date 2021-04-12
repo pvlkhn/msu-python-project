@@ -6,7 +6,9 @@ import common.socket
 
 
 def poll(function, stop_value=None):
-    """:returns generator that calls function until it returns specified value"""
+    """
+    :returns generator that calls function until it returns specified value
+    """
     value = function()
     while value != stop_value:
         yield value
@@ -22,6 +24,8 @@ def deserialize(data):
     # TODO: non-pickle serialization
     # FIXME current implementation will fail if incorrect data
     #     (non-pickled, for example) is received
+    if data is None:
+        return None
     return pickle.loads(data)
 
 
@@ -65,7 +69,6 @@ class GameServer:
 
     def start(self):
         self.__thread.start()
-        print("asd")
 
     def run(self):
         while self.is_running:

@@ -1,5 +1,6 @@
-import socket
 import select
+import socket
+from typing import Optional
 
 
 class Socket:
@@ -7,30 +8,39 @@ class Socket:
     BUFFER_SIZE = 1024
     SIZE_BYTES = 2
 
-    def __init__(self, sock: socket.socket):
+    def __init__(self, sock: Optional[socket.socket] = None):
+        if sock is None:
+            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.socket = sock
         self.socket.setblocking(False)
         self.__recv_buffer = bytes()
 
+    def connect(self, host: str, port: int, timeout: float):
+        self.socket.settimeout(timeout)
+        self.socket.connect((host, port))
+        self.socket.settimeout(0)
+
     def send(self, data: bytes):
-        size = len(data).to_bytes(self.SIZE_BYTES, self.BYTEORDER, signed=False)
+        size = len(data).to_bytes(self.SIZE_BYTES, self.BYTEORDER)
         message = size + data
         sent = self.socket.send(message)
-        return sent == len(message)
+        # For TCP we don't really need to send all the message bytes
+        # in one go, BUT it becomes important if we switch to UDP
+        if sent != len(message):
+            raise RuntimeError(f"Unable to send all the data required")
 
     def recv(self):
-        try:
+        ready, _, _ = select.select([self.socket], [], [], 0)
+        if len(ready) != 0:
             new_bytes = self.socket.recv(self.BUFFER_SIZE)
             self.__recv_buffer = self.__recv_buffer + new_bytes
-            return self.__parse_one_message()
-        except BlockingIOError:
-            return None
+        return self.__parse_one_message()
 
     def __parse_one_message(self):
         if len(self.__recv_buffer) == 0:
             return None
         size_bytes = self.__recv_buffer[:self.SIZE_BYTES]
-        payload_size = int.from_bytes(size_bytes, self.BYTEORDER, signed=False)
+        payload_size = int.from_bytes(size_bytes, self.BYTEORDER)
         message_size = self.SIZE_BYTES + payload_size
         message = self.__recv_buffer[self.SIZE_BYTES:message_size]
         if len(message) < payload_size:
@@ -44,6 +54,9 @@ class Listener:
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.socket.bind(("localhost", port))
         self.socket.listen(backlog)
+
+    def get_host(self):
+        return self.socket.getsockname()[0]
 
     def get_port(self):
         return self.socket.getsockname()[1]
