@@ -2,6 +2,8 @@ from .model import GameState, HistoryStorage, NetworkConnection
 from .view import GameWindow
 from .controller import Controller
 
+from sys import argv
+
 import tkinter
 
 
@@ -17,12 +19,12 @@ class Application(tkinter.Tk):
 
         game_state = GameState(Application.WIDTH, Application.HEIGHT)
         history_storage = HistoryStorage()
-        server_connetion = NetworkConnection()
+        server_connection = NetworkConnection(kwargs["host"], kwargs["port"])
         controller = Controller(
             game_state=game_state,
             platform_index=0,  # TODO: use 0 for host, 1 for connected
             history_storage=history_storage,
-            server_connetion=server_connetion
+            server_connection=server_connection
         )
 
         self.title("Pong game")
@@ -33,7 +35,9 @@ class Application(tkinter.Tk):
 
 
 def main():
-    Application().mainloop()
+    # TODO: game selection via GUI
+    assert len(argv) >= 3
+    Application(host=argv[1], port=int(argv[2])).mainloop()
 
 
 if __name__ == '__main__':
