@@ -20,6 +20,17 @@ class Socket:
         self.socket.connect((host, port))
         self.socket.settimeout(0)
 
+    def is_connected(self):
+        try:
+            # When MSG_PEEK is used the data is treated as unread
+            # and the next recv shall still return this data
+            data = self.socket.recv(self.BUFFER_SIZE, socket.MSG_PEEK)
+            if len(data) == 0:
+                return False
+            return True
+        except ConnectionResetError:
+            return False
+
     def send(self, data: bytes):
         size = len(data).to_bytes(self.SIZE_BYTES, self.BYTEORDER)
         message = size + data
