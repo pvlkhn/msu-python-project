@@ -1,32 +1,8 @@
-import pickle
 import threading
 import time
 
-import common.socket
-
-
-def poll(function, stop_value=None):
-    """
-    :returns generator that calls function until it returns specified value
-    """
-    value = function()
-    while value != stop_value:
-        yield value
-        value = function()
-
-
-def serialize(obj):
-    # TODO: non-pickle serialization
-    return pickle.dumps(obj, protocol=4)
-
-
-def deserialize(data):
-    # TODO: non-pickle serialization
-    # FIXME current implementation will fail if incorrect data
-    #     (non-pickled, for example) is received
-    if data is None:
-        return None
-    return pickle.loads(data)
+from common.socket import Listener
+from common.utility import serialize, deserialize, poll
 
 
 # FIXME: this is a mock
@@ -35,10 +11,9 @@ class GameState:
     def __init__(self):
         self.events_processed = 0
 
-    def process(self, events):
-        for event in events:
-            print(f" -- processing: {event}")
-        self.events_processed += len(events)
+    def process(self, event):
+        print(f" -- processing: {event}")
+        self.events_processed += 1
 
 
 class GameServer:
@@ -52,7 +27,7 @@ class GameServer:
         self.settings.update(settings)
         self.is_running = True
         # port 0 lets OS allocate free port for the socket
-        self.__listener = common.socket.Listener(port=0, backlog=2)
+        self.__listener = Listener(port=0, backlog=2)
         self.__player_sockets = []
         self.__game_state = GameState()
         self.__thread = threading.Thread(target=self.run, name=self.id)
@@ -60,12 +35,12 @@ class GameServer:
 
     def on_tick(self):
         self.__player_sockets.extend(poll(self.__listener.accept))
-        for socket in self.__player_sockets:
-            events = [deserialize(e) for e in poll(socket.recv)]
-            self.__game_state.process(events)
+        for sock in self.__player_sockets:
+            for event in poll(sock.recv):
+                self.__game_state.process(deserialize(event))
         state = serialize(self.__game_state)
-        for socket in self.__player_sockets:
-            socket.send(state)
+        for sock in self.__player_sockets:
+            sock.send(state)
 
     def start(self):
         self.__thread.start()
