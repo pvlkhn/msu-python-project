@@ -1,6 +1,9 @@
 from collections import defaultdict
 from copy import deepcopy
 
+from common.socket import Socket
+from common.utility import serialize, deserialize, poll
+
 
 class Ball(object):
 
@@ -117,14 +120,12 @@ class HistoryStorage(object):
 
 
 class NetworkConnection(object):
-    def __init__(self):
-        pass
+    def __init__(self, host: str, port: int, timeout: float = 1.0):
+        self.socket = Socket()
+        self.socket.connect(host, port, timeout)
 
-    def async_send(self, frame, data):
-        pass
+    def send(self, frame, data):
+        self.socket.send(serialize((frame, data)))
 
-    def start_async_read(self):
-        pass
-
-    def read_sync(self):
-        return []
+    def read(self):
+        return [deserialize(e) for e in poll(self.socket.recv)]
