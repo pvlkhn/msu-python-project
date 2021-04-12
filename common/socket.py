@@ -27,7 +27,7 @@ class Socket:
         # For TCP we don't really need to send all the message bytes
         # in one go, BUT it becomes important if we switch to UDP
         if sent != len(message):
-            raise RuntimeError(f"Unable to send all the data required")
+            raise RuntimeError("Unable to send all the data required")
 
     def recv(self):
         ready, _, _ = select.select([self.socket], [], [], 0)
