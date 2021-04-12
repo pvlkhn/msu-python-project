@@ -18,11 +18,11 @@ class GameState:
 
 class GameServer:
     DEFAULT_SETTINGS = {
-        "update_interval": 10
+        "name": "yet another game",
+        "update_interval": 0.05
     }
 
-    def __init__(self, game_id: str, settings: dict):
-        self.id = game_id
+    def __init__(self, settings: dict):
         self.settings = self.DEFAULT_SETTINGS
         self.settings.update(settings)
         self.is_running = True
@@ -30,7 +30,7 @@ class GameServer:
         self.__listener = Listener(port=0, backlog=2)
         self.__player_sockets = []
         self.__game_state = GameState()
-        self.__thread = threading.Thread(target=self.run, name=self.id)
+        self.__thread = threading.Thread(target=self.run)
         self.port = self.__listener.get_port()
 
     def on_tick(self):
