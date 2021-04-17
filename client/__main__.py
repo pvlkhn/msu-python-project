@@ -1,4 +1,4 @@
-from .model import GameState, HistoryStorage, NetworkConnection
+from .model import GameState, NetworkConnection
 from .view import GameWindow
 from .controller import Controller, GameLogicController
 
