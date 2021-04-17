@@ -1,63 +1,56 @@
+from .model import Controls, GameState
+
+
+class GameLogicController:
+    def __init__(self, game_state: GameState):
+        self.game_state = game_state
+        self.inputs = (set(), set())
+
+    def set_game_state(self, game_state):
+        self.game_state = game_state
+
+    def on_tick(self):
+        self.game_state.increment_current_frame()
+        for idx, player_input in enumerate(self.inputs):
+            self.game_state.get_platform(idx).move(player_input)
+        # TODO: handle intersection
+        self.game_state.ball.move()
+        self.inputs = (set(), set())
+
+    def on_input(self, player: int, control: Controls):
+        self.inputs[player].insert(control)
+
 
 class Controller:
 
-    MOVE_KEYSYMS = {'Up', 'Left', 'Down', 'Right'}
-    ACTION_LAG = 5
+    MOVE_KEYSYMS = {
+        'Up':    Controls.ROTATE_LEFT,
+        'Down':  Controls.ROTATE_RIGHT,
+        'Left':  Controls.MOVE_LEFT,
+        'Right': Controls.MOVE_RIGHT
+    }
 
-    def __init__(self, game_state, platform_index,
-                 history_storage, server_connection):
-        self.game_state = game_state
+    def __init__(self, game_controller: GameLogicController, platform_index,
+                 server_connection):
+        self.game_controller = game_controller
         self.platform_index = platform_index
-        self.history_storage = history_storage
         self.server_connection = server_connection
 
     def on_key_pressed(self, event):
         if event.keysym in Controller.MOVE_KEYSYMS:
-            current_frame = self.game_state.get_current_frame()
-            event = (self.platform_index, event.keysym)
-            action_frame = current_frame + Controller.ACTION_LAG
-            self.history_storage.add_event(action_frame, event)
-            self.server_connection.send(action_frame, event)
+            current_frame = self.game_controller.game_state.get_current_frame()
+            event = (self.platform_index, self.MOVE_KEYSYMS[event.keysym])
+            self.server_connection.send(current_frame, event)
 
     def on_frame_rendered(self):
-        current_frame = self.game_state.get_current_frame()
-        self.on_time_tick(self.game_state)
-        self.history_storage.store_state(
-            frame=current_frame,
-            state=self.game_state
-        )
+        pass
 
-    def on_time_tick(self, game_state):
-        current_frame = game_state.get_current_frame()
-        game_state.increment_current_frame()
-        events = self.history_storage.get_events(current_frame)
-        for platform_index, event in events:
-            if event in Controller.MOVE_KEYSYMS:
-                game_state.get_platform(self.platform_index).move(event)
-
-        game_state.get_ball().move()  # TODO: handle intersection
-
-        return game_state
-
-    def convert_keycode_to_move(self, keycode):
-        return None
+    def on_time_tick(self):
+        pass
 
     def on_sync_with_server(self):
-        received_events = self.server_connection.read()
-        if len(received_events) == 0:
+        received_states = self.server_connection.read()
+        if len(received_states) == 0:
             return
-        min_frame = None
-        for frame, event in received_events:
-            self.history_storage.add_event(frame, event)
-            if min_frame is None or min_frame < frame:
-                min_frame = frame
-
-        game_state = self.history_storage.get_game_state(min_frame)
-        self.history_storage.cleanup(min_frame)
-
-        current_frame = self.game_state.get_current_frame()
-        for frame in range(min_frame, current_frame):
-            game_state = self.on_time_tick(game_state)
-            self.history_storage.store(frame, game_state)
-
-        self.game_state = game_state
+        frame, last_state = received_states[-1]
+        self.game_controller.set_game_state(last_state)

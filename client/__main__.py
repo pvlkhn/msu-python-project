@@ -1,6 +1,6 @@
 from .model import GameState, HistoryStorage, NetworkConnection
 from .view import GameWindow
-from .controller import Controller
+from .controller import Controller, GameLogicController
 
 from sys import argv
 
@@ -11,19 +11,18 @@ class Application(tkinter.Tk):
     WIDTH = 800
     HEIGHT = 600
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, host, port):
+        super().__init__()
 
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(0, weight=1)
 
         game_state = GameState(Application.WIDTH, Application.HEIGHT)
-        history_storage = HistoryStorage()
-        server_connection = NetworkConnection(kwargs["host"], kwargs["port"])
+        game_controller = GameLogicController(game_state)
+        server_connection = NetworkConnection(host, port)
         controller = Controller(
-            game_state=game_state,
+            game_controller=game_controller,
             platform_index=0,  # TODO: use 0 for host, 1 for connected
-            history_storage=history_storage,
             server_connection=server_connection
         )
 
