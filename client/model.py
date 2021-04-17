@@ -2,10 +2,20 @@ from .utils import clip, l2_norm
 
 from collections import defaultdict
 from copy import deepcopy
+from enum import Enum
+
+from common.socket import Socket
+from common.utility import serialize, deserialize, poll
+
+Controls = Enum("Controls", [
+    "MOVE_LEFT",
+    "MOVE_RIGHT",
+    "ROTATE_LEFT",
+    "ROTATE_RIGHT"
+])
 
 
 class Ball(object):
-
     RADIUS = 10
     DEFAULT_SPEED = 5
 
@@ -18,7 +28,7 @@ class Ball(object):
         top_left_y = self.pos[1] - Ball.RADIUS
         bottom_right_x = self.pos[0] + Ball.RADIUS
         bottom_right_y = self.pos[1] + Ball.RADIUS
-        return (top_left_x, top_left_y, bottom_right_x, bottom_right_y)
+        return top_left_x, top_left_y, bottom_right_x, bottom_right_y
 
     def get_direction(self):
         return self.direction
@@ -60,7 +70,6 @@ class Ball(object):
 
 
 class Platform(object):
-
     WIDTH = 100
     HEIGHT = 20
     PADDING = 40
@@ -78,18 +87,19 @@ class Platform(object):
         top_left_y = self.pos[1] - Platform.HEIGHT / 2
         bottom_right_x = self.pos[0] + Platform.WIDTH / 2
         bottom_right_y = self.pos[1] + Platform.HEIGHT / 2
-        return (top_left_x, top_left_y, bottom_right_x, bottom_right_y)
+        return top_left_x, top_left_y, bottom_right_x, bottom_right_y
 
     def get_pos(self):
         return self.pos
 
-    def move(self, direction):
-        if direction == 'Left':
+    def move(self, direction: Controls):
+        if direction == Controls.MOVE_LEFT:
             self.pos = (self.pos[0] - self.horizontal_speed, self.pos[1])
-        elif direction == 'Right':
+        elif direction == Controls.MOVE_RIGHT:
             self.pos = (self.pos[0] + self.horizontal_speed, self.pos[1])
         else:
-            assert direction in {'Down', 'Up'}  # TODO: implement rotation
+            # TODO: implement rotation
+            assert direction in {Controls.ROTATE_LEFT, Controls.ROTATE_RIGHT}
 
 
 class GameState(object):
@@ -122,6 +132,7 @@ class GameState(object):
         return self.ball
 
 
+# TODO: store states only for client-side prediction
 class HistoryStorage(object):
     MAX_STORED_FRAMES = 600
 
@@ -154,14 +165,12 @@ class HistoryStorage(object):
 
 
 class NetworkConnection(object):
-    def __init__(self):
-        pass
+    def __init__(self, host: str, port: int, timeout: float = 1.0):
+        self.socket = Socket()
+        self.socket.connect(host, port, timeout)
 
-    def async_send(self, frame, data):
-        pass
+    def send(self, frame, data):
+        self.socket.send(serialize((frame, data)))
 
-    def start_async_read(self):
-        pass
-
-    def read_sync(self):
-        return []
+    def read(self):
+        return [deserialize(e) for e in poll(self.socket.recv)]
