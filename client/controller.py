@@ -13,8 +13,16 @@ class GameLogicController:
         self.game_state.increment_current_frame()
         for idx, player_input in enumerate(self.inputs):
             self.game_state.get_platform(idx).move(player_input)
-        # TODO: handle intersection
-        self.game_state.ball.move()
+
+        ball = self.game_state.get_ball()
+        platform0 = self.game_state.get_platform(0)
+        platform1 = self.game_state.get_platform(1)
+
+        if (ball.is_intersect(platform0) and ball.is_move_to(platform0) or
+                ball.is_intersect(platform1) and ball.is_move_to(platform1)):
+            ball.reflect()
+        ball.move()
+
         self.inputs = (set(), set())
 
     def on_input(self, player: int, control: Controls):

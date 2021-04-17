@@ -1,3 +1,5 @@
+from .utils import clip, l2_norm
+
 from collections import defaultdict
 from copy import deepcopy
 from enum import Enum
@@ -28,11 +30,43 @@ class Ball(object):
         bottom_right_y = self.pos[1] + Ball.RADIUS
         return top_left_x, top_left_y, bottom_right_x, bottom_right_y
 
+    def get_direction(self):
+        return self.direction
+
+    def get_pos(self):
+        return self.pos
+
     def move(self):
         self.pos = (
             self.pos[0] + self.direction[0],
             self.pos[1] + self.direction[1]
         )
+
+    def reflect(self):
+        self.direction = (
+            self.direction[0],
+            -self.direction[1]
+        )
+
+    def is_intersect(self, platform):
+        ball_center = self.get_pos()
+        platform_box = platform.get_box()
+
+        x = clip(ball_center[0], platform_box[0], platform_box[2])
+        y = clip(ball_center[1], platform_box[1], platform_box[3])
+
+        distance = l2_norm((ball_center[0] - x, ball_center[1] - y))
+        if distance <= Ball.RADIUS:
+            return True
+        else:
+            return False
+
+    def is_move_to(self, platform):
+        ball_center = self.get_pos()
+        ball_direction = self.get_direction()
+        platform_center = platform.get_pos()
+
+        return (platform_center[1] - ball_center[1]) * ball_direction[1] > 0
 
 
 class Platform(object):
@@ -54,6 +88,9 @@ class Platform(object):
         bottom_right_x = self.pos[0] + Platform.WIDTH / 2
         bottom_right_y = self.pos[1] + Platform.HEIGHT / 2
         return top_left_x, top_left_y, bottom_right_x, bottom_right_y
+
+    def get_pos(self):
+        return self.pos
 
     def move(self, direction: Controls):
         if direction == Controls.MOVE_LEFT:
