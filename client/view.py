@@ -109,7 +109,8 @@ class LobbyBrowserWindow(tk.Frame):
         self.refresh_games_list()
 
     def make_url(self, path):
-        return self.DEFAULT_SCHEMA + "://" + self.server_address.get() + "/" + path
+        return self.DEFAULT_SCHEMA + "://" \
+             + self.server_address.get() + "/" + path
 
     def __auto_refresh(self):
         self.refresh_games_list()
