@@ -14,6 +14,7 @@ class Application(tk.Tk):
 
         game_state = GameState(Application.WIDTH, Application.HEIGHT)
         game_controller = GameLogicController(game_state)
+        # TODO: create connection via GUI
         server_connection = NetworkConnection("localhost", 228)
         controller = Controller(
             game_controller=game_controller,
