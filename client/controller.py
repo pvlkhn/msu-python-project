@@ -47,7 +47,7 @@ class Controller:
     def on_key_pressed(self, event):
         if event.keysym in Controller.MOVE_KEYSYMS:
             current_frame = self.game_controller.game_state.get_current_frame()
-            event = (self.platform_index, self.MOVE_KEYSYMS[event.keysym])
+            event = self.MOVE_KEYSYMS[event.keysym]
             self.server_connection.send(current_frame, event)
 
     def on_frame_rendered(self):
