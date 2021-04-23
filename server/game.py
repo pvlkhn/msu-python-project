@@ -1,3 +1,4 @@
+import json
 import threading
 import time
 
@@ -11,7 +12,7 @@ from client.controller import GameLogicController
 class GameServer:
     DEFAULT_SETTINGS = {
         "name": "yet another game",
-        "update_interval": 0.05
+        "update_interval": 1 / 60
     }
 
     def __init__(self, settings: dict):
@@ -22,7 +23,7 @@ class GameServer:
         self.__listener = Listener(port=0, backlog=2)
         self.__player_sockets = []
         self.__player_frames = {}
-        self.__game_state = GameLogicController(GameState(800, 600))  # FIXME
+        self.__game_controller = GameLogicController(GameState(800, 600))  # FIXME
         self.__thread = threading.Thread(target=self.run)
         self.port = self.__listener.get_port()
 
@@ -35,10 +36,11 @@ class GameServer:
                     client_frame,
                     self.__player_frames.get(player, 0)
                 )
-                self.__game_state.on_input(player, player_input)
-        state = self.__game_state
+                self.__game_controller.on_input(player, player_input)
+        self.__game_controller.on_tick()
+        state = self.__game_controller.game_state
         for player, sock in enumerate(self.__player_sockets):
-            message = serialize((self.__player_frames[player], state))
+            message = serialize((self.__player_frames.get(player, 0), state))
             sock.send(message)
 
     def start(self):

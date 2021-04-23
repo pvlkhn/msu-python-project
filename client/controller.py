@@ -12,7 +12,8 @@ class GameLogicController:
     def on_tick(self):
         self.game_state.increment_current_frame()
         for idx, player_input in enumerate(self.inputs):
-            self.game_state.get_platform(idx).move(player_input)
+            for control in player_input:
+                self.game_state.get_platform(idx).move(control)
 
         ball = self.game_state.get_ball()
         platform0 = self.game_state.get_platform(0)
@@ -26,7 +27,7 @@ class GameLogicController:
         self.inputs = (set(), set())
 
     def on_input(self, player: int, control: Controls):
-        self.inputs[player].insert(control)
+        self.inputs[player].add(control)
 
 
 class Controller:

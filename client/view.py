@@ -1,13 +1,14 @@
 import tkinter as tk
 import requests
 
+from client.controller import Controller
+
 
 class GameWindow(tk.Frame):
-    def __init__(self, game_state, controller, fps, polling_ts, master):
+    def __init__(self, controller: Controller, fps: int, polling_ts, master):
         super().__init__(master=master)
 
         self.game_field = GameField(
-            game_state=game_state,
             controller=controller,
             fps=fps,
             polling_ts=polling_ts,
@@ -25,10 +26,9 @@ class GameWindow(tk.Frame):
 
 
 class GameField(tk.Canvas):
-    def __init__(self, game_state, controller, fps, polling_ts, master):
+    def __init__(self, controller: Controller, fps, polling_ts, master):
         super().__init__(master=master)
 
-        self.game_state = game_state
         self.polling_ts = polling_ts
         self.controller = controller
         self.sync_with_server()
@@ -38,9 +38,11 @@ class GameField(tk.Canvas):
     def redraw(self):
         self.delete("all")
 
-        self.create_rectangle(*self.game_state.get_platform(0).get_box())
-        self.create_rectangle(*self.game_state.get_platform(1).get_box())
-        self.create_oval(*self.game_state.get_ball().get_box())
+        game_state = self.controller.game_controller.game_state
+
+        self.create_rectangle(*game_state.get_platform(0).get_box())
+        self.create_rectangle(*game_state.get_platform(1).get_box())
+        self.create_oval(*game_state.get_ball().get_box())
 
     def sync_with_server(self):
         self.controller.on_sync_with_server()
@@ -56,17 +58,15 @@ class LobbyBrowserWindow(tk.Frame):
     DEFAULT_SCHEMA = "http"
     AUTO_REFRESH_INTERVAL = 10
 
-    def __init__(self, master):
+    def __init__(self, master, on_connect: callable):
         super().__init__(master=master)
+        self.on_connect = on_connect
+        self.games_data = []
         self.server_address = tk.StringVar()
         self.server_address.set("localhost:5000")
         self.server_address_label = tk.Entry(
             master=self,
             textvariable=self.server_address
-        )
-        self.server_status = tk.Label(
-            master=self,
-            text="Checking server status..."
         )
         self.refresh_button = tk.Button(
             master=self,
@@ -81,12 +81,22 @@ class LobbyBrowserWindow(tk.Frame):
         self.games_list = tk.Listbox(
             master=self
         )
+        self.join_game_button = tk.Button(
+            master=self,
+            text="Join",
+            command=self.join_selected_game
+        )
+        self.server_status = tk.Label(
+            master=self,
+            text="Checking server status..."
+        )
 
         self.server_address_label.pack(fill=tk.BOTH)
-        self.refresh_button.pack(fill=tk.Y)
-        self.create_game_button.pack(fill=tk.Y)
+        self.refresh_button.pack(fill=tk.X)
+        self.create_game_button.pack(fill=tk.X)
         self.games_list.pack(fill=tk.BOTH)
-        self.server_status.pack(fill=tk.Y)
+        self.join_game_button.pack(fill=tk.X)
+        self.server_status.pack(fill=tk.X)
 
         self.__auto_refresh()
 
@@ -94,8 +104,10 @@ class LobbyBrowserWindow(tk.Frame):
         self.games_list.delete(0, self.games_list.size())
         try:
             response = requests.get(self.make_url("games/")).json()
-            for game_id in response:
-                self.games_list.insert(tk.END, game_id)
+            self.games_data = list(response.items())
+            for game_id, game_data in self.games_data:
+                game_name = game_data.get("name", game_id)
+                self.games_list.insert(tk.END, game_name)
             self.server_status.config(text="")
         except requests.exceptions.ConnectionError:
             self.server_status.config(text="Could not connect to server!")
@@ -107,6 +119,17 @@ class LobbyBrowserWindow(tk.Frame):
             json={"name": "yet another game"}
         )
         self.refresh_games_list()
+
+    def join_selected_game(self):
+        selection = self.games_list.curselection()
+        if selection == ():
+            return
+        _, game_data = self.games_data[selection[0]]
+        game_port = int(game_data["port"])
+        self.on_connect(self.get_hostname(), game_port)
+
+    def get_hostname(self):
+        return self.server_address.get().split(":")[0].strip()
 
     def make_url(self, path):
         return self.DEFAULT_SCHEMA + "://" \
