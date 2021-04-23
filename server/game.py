@@ -1,4 +1,3 @@
-import json
 import threading
 import time
 
@@ -23,7 +22,7 @@ class GameServer:
         self.__listener = Listener(port=0, backlog=2)
         self.__player_sockets = []
         self.__player_frames = {}
-        self.__game_controller = GameLogicController(GameState(800, 600))  # FIXME
+        self.__game_controller = GameLogicController(GameState(800, 600))
         self.__thread = threading.Thread(target=self.run)
         self.port = self.__listener.get_port()
 
