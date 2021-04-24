@@ -116,39 +116,25 @@ class Platform(object):
         self.horizontal_speed = Platform.DEFAULT_SPEED
 
     def get_box(self):
-        top_left_x = - Platform.WIDTH / 2
-        top_left_y = - Platform.HEIGHT / 2
-        top_right_x = Platform.WIDTH / 2
-        top_right_y = - Platform.HEIGHT / 2
-        bottom_left_x = - Platform.WIDTH / 2
-        bottom_left_y = Platform.HEIGHT / 2
-        bottom_right_x = Platform.WIDTH / 2
-        bottom_right_y = Platform.HEIGHT / 2
-        (top_left_x, top_left_y, top_right_x, top_right_y,
-         bottom_left_x, bottom_left_y, bottom_right_x, bottom_right_y) = \
-            top_left_x * cos(self.angle) - top_left_y * sin(self.angle), \
-            top_left_x * sin(self.angle) + top_left_y * cos(self.angle), \
-            top_right_x * cos(self.angle) - top_right_y * sin(self.angle), \
-            top_right_x * sin(self.angle) + top_right_y * cos(self.angle), \
-            bottom_left_x * cos(self.angle) - \
-            bottom_left_y * sin(self.angle), \
-            bottom_left_x * sin(self.angle) + \
-            bottom_left_y * cos(self.angle), \
-            bottom_right_x * cos(self.angle) - \
-            bottom_right_y * sin(self.angle), \
-            bottom_right_x * sin(self.angle) +\
-            bottom_right_y * cos(self.angle)
-        top_left_x = self.pos[0] + top_left_x
-        top_left_y = self.pos[1] + top_left_y
-        top_right_x = self.pos[0] + top_right_x
-        top_right_y = self.pos[1] + top_right_y
-        bottom_left_x = self.pos[0] + bottom_left_x
-        bottom_left_y = self.pos[1] + bottom_left_y
-        bottom_right_x = self.pos[0] + bottom_right_x
-        bottom_right_y = self.pos[1] + bottom_right_y
-        return (top_left_x, top_left_y, top_right_x, top_right_y,
-                bottom_right_x, bottom_right_y, bottom_left_x,
-                bottom_left_y, top_left_x, top_left_y)
+        x_tl, x_bl = - Platform.WIDTH / 2
+        y_tl, y_tr = - Platform.HEIGHT / 2
+        x_tr, x_br = Platform.WIDTH / 2
+        y_bl, y_br = Platform.HEIGHT / 2
+        x_tl, y_tl = vector_rotation(self.angle, x_tl, y_tl)
+        x_tr, y_tr = vector_rotation(self.angle, x_tr, y_tr)
+        x_bl, y_bl = vector_rotation(self.angle, x_bl, y_bl)
+        x_br, y_br = vector_rotation(self.angle, x_br, y_br)
+        x_tl = self.pos[0] + x_tl
+        y_tl = self.pos[1] + y_tl
+        x_tr = self.pos[0] + x_tr
+        y_tr = self.pos[1] + y_tr
+        x_bl = self.pos[0] + x_bl
+        y_bl = self.pos[1] + y_bl
+        x_br = self.pos[0] + x_br
+        y_br = self.pos[1] + y_br
+        return (x_tl, y_tl, x_tr, y_tr,
+                x_br, y_br, x_bl,
+                y_bl, x_tl, y_tl)
 
     def get_pos(self):
         return self.pos
