@@ -1,6 +1,7 @@
-from .utils import *
+from .utils import line_by_two_points, normal, line_by_vector
+from .utils import vector_angle, vector_rotation, l2_norm
 
-import math
+from math import sin, cos, pi
 from collections import defaultdict
 from copy import deepcopy
 from enum import Enum
@@ -51,34 +52,41 @@ class Ball(object):
         ball_center = self.get_pos()
         platform_box = platform.get_box()
         x1, y1, x2, y2 = platform_box[4:8] if up else platform_box[:4]
-        a1, b1, c1 = line_by_two_points(x1, x2, y1, y2) # platform line
-        a2, b2, c2 = normal(a1, b1, ball_center[0], ball_center[1])   # platform normal
-        a3, b3, c3 = line_by_vector(ball_center[0], ball_center[1], self.direction[0], self.direction[1])   # ball line
-        alpha = math.acos((a2 * a3 + b2 * b3) / (a2 ** 2 + b2 ** 2) ** 0.5 / (a3 ** 2 + b3 ** 2) ** 0.5)    # angle
-        a = vector_angle(self.direction[0], x2 - x1, self.direction[1], y2 - y1)
-        self.direction = vector_rotation(math.pi * 2, self.direction[0], self.direction[1])
-        print(a)
-        if a > math.pi / 2:
-            self.direction = vector_rotation(-2 * alpha, self.direction[0], self.direction[1])
+        # platform line
+        a1, b1, c1 = line_by_two_points(x1, x2, y1, y2)
+        # platform normal
+        a2, b2, c2 = normal(a1, b1, ball_center[0], ball_center[1])
+        # ball line
+        a3, b3, c3 = line_by_vector(ball_center[0], ball_center[1],
+                                    self.direction[0], self.direction[1])
+        # angle
+        alpha = vector_angle(a2, a3, b2, b3)
+        a = vector_angle(self.direction[0], x2 - x1,
+                         self.direction[1], y2 - y1)
+        self.direction = vector_rotation(pi * 2, self.direction[0],
+                                         self.direction[1])
+        if a > pi / 2:
+            self.direction = vector_rotation(-2 * alpha, self.direction[0],
+                                             self.direction[1])
         else:
-            self.direction = vector_rotation(2 * alpha, self.direction[0], self.direction[1])
+            self.direction = vector_rotation(2 * alpha, self.direction[0],
+                                             self.direction[1])
 
     def is_intersect(self, platform, up):
         ball_center = self.get_pos()
         platform_box = platform.get_box()
         x1, y1, x2, y2 = platform_box[4:8] if up else platform_box[:4]
 
-        distance = (abs((y2 - y1) * ball_center[0] - (x2 - x1) * ball_center[1] + x2 * y1 - x1 * y2) /
+        distance = (abs((y2 - y1) * ball_center[0] - (x2 - x1) *
+                        ball_center[1] + x2 * y1 - x1 * y2) /
                     ((y2 - y1) ** 2 + (x2 - x1) ** 2) ** 0.5)
 
-        if math.acos(((y1 - y2) * (ball_center[1] - y2) + (x1 - x2) * (ball_center[0] - x2)) /
-                     ((x1 - x2) ** 2 + (y1 - y2) ** 2) ** 0.5 /
-                     ((ball_center[0] - x2) ** 2 + (ball_center[1] - y2) ** 2) ** 0.5) > math.pi / 2:
-            distance = ((y2 - ball_center[1]) ** 2 + (x2 - ball_center[0]) ** 2) ** 0.5
-        if math.acos(((y2 - y1) * (ball_center[1] - y1) + (x2 -x1) * (ball_center[0] - x1)) /
-                     ((x2 - x1) ** 2 + (y2 - y1) ** 2) ** 0.5 /
-                     ((ball_center[0] - x1) ** 2 + (ball_center[1] - y1) ** 2) ** 0.5) > math.pi / 2:
-            distance = ((ball_center[1] - y1) ** 2 + (ball_center[0] - x1) ** 2) ** 0.5
+        if vector_angle(x1 - x2, ball_center[0] - x2, y1 - y2,
+                        ball_center[1] - y2) > pi / 2:
+            distance = l2_norm([y2 - ball_center[1], x2 - ball_center[0]])
+        if vector_angle(x2 - x1, ball_center[0] - x1, y2 - y1,
+                        ball_center[1] - y1) > pi / 2:
+            distance = l2_norm([ball_center[1] - y1, ball_center[0] - x1])
 
         if distance <= Ball.RADIUS:
             return True
@@ -118,14 +126,18 @@ class Platform(object):
         bottom_right_y = Platform.HEIGHT / 2
         (top_left_x, top_left_y, top_right_x, top_right_y,
          bottom_left_x, bottom_left_y, bottom_right_x, bottom_right_y) = \
-            top_left_x * math.cos(self.angle) - top_left_y * math.sin(self.angle), \
-            top_left_x * math.sin(self.angle) + top_left_y * math.cos(self.angle), \
-            top_right_x * math.cos(self.angle) - top_right_y * math.sin(self.angle), \
-            top_right_x * math.sin(self.angle) + top_right_y * math.cos(self.angle), \
-            bottom_left_x * math.cos(self.angle) - bottom_left_y * math.sin(self.angle), \
-            bottom_left_x * math.sin(self.angle) + bottom_left_y * math.cos(self.angle), \
-            bottom_right_x * math.cos(self.angle) - bottom_right_y * math.sin(self.angle),\
-            bottom_right_x * math.sin(self.angle) + bottom_right_y * math.cos(self.angle)
+            top_left_x * cos(self.angle) - top_left_y * sin(self.angle), \
+            top_left_x * sin(self.angle) + top_left_y * cos(self.angle), \
+            top_right_x * cos(self.angle) - top_right_y * sin(self.angle), \
+            top_right_x * sin(self.angle) + top_right_y * cos(self.angle), \
+            bottom_left_x * cos(self.angle) - \
+            bottom_left_y * sin(self.angle), \
+            bottom_left_x * sin(self.angle) + \
+            bottom_left_y * cos(self.angle), \
+            bottom_right_x * cos(self.angle) - \
+            bottom_right_y * sin(self.angle), \
+            bottom_right_x * sin(self.angle) +\
+            bottom_right_y * cos(self.angle)
         top_left_x = self.pos[0] + top_left_x
         top_left_y = self.pos[1] + top_left_y
         top_right_x = self.pos[0] + top_right_x
@@ -134,8 +146,9 @@ class Platform(object):
         bottom_left_y = self.pos[1] + bottom_left_y
         bottom_right_x = self.pos[0] + bottom_right_x
         bottom_right_y = self.pos[1] + bottom_right_y
-        return (top_left_x, top_left_y, top_right_x, top_right_y, bottom_right_x,
-                bottom_right_y, bottom_left_x, bottom_left_y, top_left_x, top_left_y)
+        return (top_left_x, top_left_y, top_right_x, top_right_y,
+                bottom_right_x, bottom_right_y, bottom_left_x,
+                bottom_left_y, top_left_x, top_left_y)
 
     def get_pos(self):
         return self.pos
@@ -147,12 +160,12 @@ class Platform(object):
             self.pos = (self.pos[0] + self.horizontal_speed, self.pos[1])
         elif direction == Controls.ROTATE_RIGHT:
             self.angle += self.rotation_speed
-            if self.angle > math.pi * 2:
-                self.angle -= math.pi * 2
+            if self.angle > pi * 2:
+                self.angle -= pi * 2
         elif direction == Controls.ROTATE_LEFT:
             self.angle -= self.rotation_speed
             if self.angle < 0:
-                self.angle += math.pi * 2
+                self.angle += pi * 2
 
 
 class GameState(object):
