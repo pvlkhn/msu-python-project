@@ -5,6 +5,7 @@ requires = [
     "grpcio==1.36.1",
     "pygame==2.0.1",
     "pygame-gui==0.5.7",
-    "Flask==1.1.2"
+    "Flask==1.1.2",
+    "requests==2.25.1"
 ]
 build-backend = "setuptools.build_meta"
