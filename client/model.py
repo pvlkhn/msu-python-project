@@ -116,7 +116,8 @@ class Platform(object):
         bottom_left_y = Platform.HEIGHT / 2
         bottom_right_x = Platform.WIDTH / 2
         bottom_right_y = Platform.HEIGHT / 2
-        top_left_x, top_left_y, top_right_x, top_right_y, bottom_left_x, bottom_left_y, bottom_right_x, bottom_right_y = \
+        (top_left_x, top_left_y, top_right_x, top_right_y,
+         bottom_left_x, bottom_left_y, bottom_right_x, bottom_right_y) = \
             top_left_x * math.cos(self.angle) - top_left_y * math.sin(self.angle), \
             top_left_x * math.sin(self.angle) + top_left_y * math.cos(self.angle), \
             top_right_x * math.cos(self.angle) - top_right_y * math.sin(self.angle), \
@@ -133,8 +134,8 @@ class Platform(object):
         bottom_left_y = self.pos[1] + bottom_left_y
         bottom_right_x = self.pos[0] + bottom_right_x
         bottom_right_y = self.pos[1] + bottom_right_y
-        return top_left_x, top_left_y, top_right_x, top_right_y,bottom_right_x,\
-               bottom_right_y, bottom_left_x, bottom_left_y, top_left_x, top_left_y
+        return (top_left_x, top_left_y, top_right_x, top_right_y, bottom_right_x,
+                bottom_right_y, bottom_left_x, bottom_left_y, top_left_x, top_left_y)
 
     def get_pos(self):
         return self.pos
