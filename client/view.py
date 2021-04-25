@@ -37,11 +37,13 @@ class GameField(tk.Canvas):
 
     def redraw(self):
         self.delete("all")
-
         game_state = self.controller.game_controller.game_state
-
-        self.create_rectangle(*game_state.get_platform(0).get_box())
-        self.create_rectangle(*game_state.get_platform(1).get_box())
+        platform1 = game_state.get_platform(0).get_box()
+        platform2 = game_state.get_platform(1).get_box()
+        self.create_line(platform2[4:8], width=1.5)
+        self.create_line(platform2)
+        self.create_line(platform1[:4], width=1.5)
+        self.create_line(platform1[2:])
         self.create_oval(*game_state.get_ball().get_box())
 
     def sync_with_server(self):
