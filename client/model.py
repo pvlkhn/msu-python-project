@@ -65,7 +65,7 @@ class Ball(object):
                          self.direction[1], y2 - y1)
         self.direction = vector_rotation(pi * 2, self.direction[0],
                                          self.direction[1])
-        if a > pi / 2:
+        if a < pi / 2:
             self.direction = vector_rotation(-2 * alpha, self.direction[0],
                                              self.direction[1])
         else:
@@ -116,10 +116,10 @@ class Platform(object):
         self.horizontal_speed = Platform.DEFAULT_SPEED
 
     def get_box(self):
-        x_tl, x_bl = - Platform.WIDTH / 2
-        y_tl, y_tr = - Platform.HEIGHT / 2
-        x_tr, x_br = Platform.WIDTH / 2
-        y_bl, y_br = Platform.HEIGHT / 2
+        x_tl = x_bl = - Platform.WIDTH / 2
+        y_tl = y_tr = - Platform.HEIGHT / 2
+        x_tr = x_br = Platform.WIDTH / 2
+        y_bl = y_br = Platform.HEIGHT / 2
         x_tl, y_tl = vector_rotation(self.angle, x_tl, y_tl)
         x_tr, y_tr = vector_rotation(self.angle, x_tr, y_tr)
         x_bl, y_bl = vector_rotation(self.angle, x_bl, y_bl)
@@ -144,11 +144,11 @@ class Platform(object):
             self.pos = (self.pos[0] - self.horizontal_speed, self.pos[1])
         elif direction == Controls.MOVE_RIGHT:
             self.pos = (self.pos[0] + self.horizontal_speed, self.pos[1])
-        elif direction == Controls.ROTATE_RIGHT:
+        elif direction == Controls.ROTATE_LEFT:
             self.angle += self.rotation_speed
             if self.angle > pi * 2:
                 self.angle -= pi * 2
-        elif direction == Controls.ROTATE_LEFT:
+        elif direction == Controls.ROTATE_RIGHT:
             self.angle -= self.rotation_speed
             if self.angle < 0:
                 self.angle += pi * 2
