@@ -18,6 +18,7 @@ class GameServer:
 
     def __init__(self, settings: dict):
         """Creates a new game server
+
         :param settings: a dictionary with arbitrary game settings
         """
         self.settings = self.DEFAULT_SETTINGS
@@ -49,12 +50,14 @@ class GameServer:
 
     def start(self) -> None:
         """Starts server in separate thread
+
         :return: `None`
         """
         self.__thread.start()
 
     def run(self) -> None:
         """Runs server in current thread, returns when the game ends
+
         :return: `None`
         """
         while self.is_running:
@@ -64,6 +67,7 @@ class GameServer:
 
     def stop(self) -> None:
         """Stops server running in separate thread
+
         :return: `None`
         """
         self.is_running = False
