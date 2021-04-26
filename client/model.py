@@ -184,38 +184,6 @@ class GameState(object):
         return self.ball
 
 
-# TODO: store states only for client-side prediction
-class HistoryStorage(object):
-    MAX_STORED_FRAMES = 600
-
-    def __init__(self):
-        self.events_per_frame = defaultdict(list)
-        self.states_per_frame = {}
-        self.min_stored_frame = 0
-
-    def add_event(self, frame, event):
-        self.events_per_frame[frame].append(event)
-
-    def get_events(self, frame):
-        return self.events_per_frame[frame]
-
-    def store_state(self, frame, state):
-        self.events_per_frame[frame] = deepcopy(state)
-        if len(self.events_per_frame) > HistoryStorage.MAX_STORED_FRAMES:
-            raise RuntimeError("Server doesn't respond for too long")
-
-    def get_game_state(self, frame):
-        return self.events_per_frame[frame]
-
-    def cleanup(self, frame):
-        if self.min_stored_frame == frame:
-            assert frame in self.events_per_frame
-            assert frame in self.states_per_frame
-            del self.events_per_frame[frame]
-            del self.states_per_frame[frame]
-            self.min_stored_frame += 1
-
-
 class NetworkConnection(object):
     def __init__(self, host: str, port: int, timeout: float = 1.0):
         self.socket = Socket()
