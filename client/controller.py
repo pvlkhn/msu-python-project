@@ -1,4 +1,4 @@
-from .model import Controls, GameState
+from .model import Controls, GameState, StateCache
 
 
 class GameLogicController:
@@ -40,9 +40,13 @@ class Controller:
         'Right': Controls.MOVE_RIGHT
     }
 
-    def __init__(self, game_controller: GameLogicController, platform_index,
+    def __init__(self,
+                 game_controller: GameLogicController,
+                 state_cache: StateCache,
+                 platform_index,
                  server_connection):
         self.game_controller = game_controller
+        self.state_cache = state_cache
         self.platform_index = platform_index
         self.server_connection = server_connection
 
@@ -59,8 +63,8 @@ class Controller:
         pass
 
     def on_sync_with_server(self):
-        received_states = self.server_connection.read()
-        if len(received_states) == 0:
-            return
-        frame, last_state = received_states[-1]
-        self.game_controller.set_game_state(last_state)
+        for frame, state in self.server_connection.read():
+            self.state_cache.push(state)
+        last_state = self.state_cache.pop()
+        if last_state is not None:
+            self.game_controller.set_game_state(last_state)

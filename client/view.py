@@ -5,13 +5,12 @@ from client.controller import Controller
 
 
 class GameWindow(tk.Frame):
-    def __init__(self, controller: Controller, fps: int, polling_ts, master):
+    def __init__(self, controller: Controller, fps: int, master):
         super().__init__(master=master)
 
         self.game_field = GameField(
             controller=controller,
             fps=fps,
-            polling_ts=polling_ts,
             master=self
         )
 
@@ -26,14 +25,14 @@ class GameWindow(tk.Frame):
 
 
 class GameField(tk.Canvas):
-    def __init__(self, controller: Controller, fps, polling_ts, master):
+    def __init__(self, controller: Controller, fps: int, master):
         super().__init__(master=master)
 
-        self.polling_ts = polling_ts
         self.controller = controller
-        self.sync_with_server()
         self.fps = fps
+        self.polling_ts = int(1000 / self.fps)
         self.start_redrawing()
+        self.sync_with_server()
 
     def redraw(self):
         self.delete("all")
