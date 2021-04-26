@@ -9,12 +9,17 @@ from client.controller import GameLogicController
 
 
 class GameServer:
+    """Class representing a pong game server"""
+
     DEFAULT_SETTINGS = {
         "name": "yet another game",
         "update_interval": 1 / 60
     }
 
     def __init__(self, settings: dict):
+        """Creates a new game server
+        :param settings: a dictionary with arbitrary game settings
+        """
         self.settings = self.DEFAULT_SETTINGS
         self.settings.update(settings)
         self.is_running = True
@@ -26,7 +31,7 @@ class GameServer:
         self.__thread = threading.Thread(target=self.run)
         self.port = self.__listener.get_port()
 
-    def on_tick(self):
+    def __on_tick(self):
         self.__player_sockets.extend(poll(self.__listener.accept))
         for player, sock in enumerate(self.__player_sockets):
             for event in poll(sock.recv):
@@ -42,14 +47,23 @@ class GameServer:
             message = serialize((self.__player_frames.get(player, 0), state))
             sock.send(message)
 
-    def start(self):
+    def start(self) -> None:
+        """Starts server in separate thread
+        :return: `None`
+        """
         self.__thread.start()
 
-    def run(self):
+    def run(self) -> None:
+        """Runs server in current thread, returns when the game ends
+        :return: `None`
+        """
         while self.is_running:
-            self.on_tick()
+            self.__on_tick()
             # TODO: handle update interval properly
             time.sleep(self.settings["update_interval"])
 
-    def stop(self):
+    def stop(self) -> None:
+        """Stops server running in separate thread
+        :return: `None`
+        """
         self.is_running = False
