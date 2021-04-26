@@ -46,10 +46,17 @@ class GameServer:
         self.__thread.start()
 
     def run(self):
+        update_interval = self.settings["update_interval"]
+        last_loop_time = time.time()
+        extra_time = 0.0
         while self.is_running:
-            self.on_tick()
-            # TODO: handle update interval properly
-            time.sleep(self.settings["update_interval"])
+            now = time.time()
+            extra_time += now - last_loop_time
+            last_loop_time = now
+            while extra_time > update_interval:
+                self.on_tick()
+                extra_time -= update_interval
+            time.sleep(update_interval - extra_time)
 
     def stop(self):
         self.is_running = False

@@ -1,4 +1,4 @@
-from .model import GameState, NetworkConnection
+from .model import GameState, NetworkConnection, StateCache
 from .view import GameWindow, LobbyBrowserWindow
 from .controller import Controller, GameLogicController
 
@@ -36,10 +36,11 @@ class Application(tk.Tk):
         server_connection = NetworkConnection(hostname, port)
         controller = Controller(
             game_controller=game_controller,
+            state_cache=StateCache(2),
             platform_index=0,  # TODO: use 0 for host, 1 for connected
             server_connection=server_connection
         )
-        window = GameWindow(controller, 60, 100, master=self.game_frame)
+        window = GameWindow(controller, 60, master=self.game_frame)
         window.pack(expand=True, fill=tk.BOTH)
 
         self.show_game()
