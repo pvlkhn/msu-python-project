@@ -1,4 +1,3 @@
-import pytest
 from .utils import vector_rotation, vector_angle, line_by_vector, clip
 from .utils import intersect, normal, line_by_two_points, l2_norm
 
