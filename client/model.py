@@ -194,3 +194,23 @@ class NetworkConnection(object):
 
     def read(self):
         return [deserialize(e) for e in poll(self.socket.recv)]
+
+
+class StateCache:
+    def __init__(self, size: int):
+        self.size = size
+        self.states = []
+
+    def push(self, state):
+        self.states.append(state)
+        self.__shrink()
+
+    def pop(self):
+        if len(self.states) == 0:
+            return None
+        head, self.states = self.states[0], self.states[1:]
+        return head
+
+    def __shrink(self):
+        starting_index = max(len(self.states) - self.size, 0)
+        self.states = self.states[starting_index:]
