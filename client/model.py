@@ -2,8 +2,6 @@ from .utils import line_by_two_points, normal, line_by_vector
 from .utils import vector_angle, vector_rotation, l2_norm
 
 from math import pi
-from collections import defaultdict
-from copy import deepcopy
 from enum import Enum
 
 from common.socket import Socket
