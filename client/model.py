@@ -163,7 +163,7 @@ class GameState(object):
         self.reset()
 
     def reset(self):
-        self.ball = Ball(self.window_width / 2, self.window_height / 2)
+        self.reset_ball()
         self.platform1 = Platform(
             pos_x=(self.window_width / 2),
             pos_y=(self.window_height - Platform.PADDING)
@@ -173,6 +173,9 @@ class GameState(object):
             pos_y=Platform.PADDING
         )
         self.scores = (0, 0)
+
+    def reset_ball(self):
+        self.ball = Ball(self.window_width / 2, self.window_height / 2)
 
     def get_current_frame(self):
         return self.current_frame
@@ -198,39 +201,6 @@ class GameState(object):
 
     def get_ball(self):
         return self.ball
-
-    def move_ball(self):
-        self.ball.move()
-        ball_box = self.ball.get_box()
-        top_left_y = ball_box[1]
-        bottom_right_y = ball_box[3]
-
-        if bottom_right_y <= 0:
-            self.scores = (
-                self.scores[0],
-                self.scores[1] + 1
-            )
-            self.ball = Ball(self.window_width / 2, self.window_height / 2)
-
-        if top_left_y >= self.window_height:
-            self.scores = (
-                self.scores[0] + 1,
-                self.scores[1]
-            )
-            self.ball = Ball(self.window_width / 2, self.window_height / 2)
-
-        if self.scores[0] >= GameState.WIN_SCORE:
-            self.wins = (
-                self.wins[0] + 1,
-                self.wins[1]
-            )
-            self.reset()
-        if self.scores[1] >= GameState.WIN_SCORE:
-            self.wins = (
-                self.wins[0],
-                self.wins[1] + 1
-            )
-            self.reset()
 
 
 class NetworkConnection(object):
