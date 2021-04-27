@@ -27,6 +27,8 @@ def normal(a, b, x, y):
 
 
 def intersect(a, b, c, a1, b1, c1):
+    if abs(a * b1 - a1 * b) < 1e-10:
+        raise ValueError("Lines are parallel!")
     x = (c1 * b - c * b1) / (a * b1 - a1 * b)
     y = (a1 * c - a * c1) / (a * b1 - a1 * b)
     return x, y
