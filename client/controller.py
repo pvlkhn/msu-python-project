@@ -23,12 +23,46 @@ class GameLogicController:
             ball.reflect(platform0, False)
         if ball.is_intersect(platform1, True) and ball.is_move_to(platform1):
             ball.reflect(platform1, True)
-        ball.move()
+
+        self.move_ball()
 
         self.inputs = (set(), set())
 
     def on_input(self, player: int, control: Controls):
         self.inputs[player].add(control)
+
+    def add_score(self, idx):
+        self.game_state.scores = (
+            self.game_state.scores[0] + (idx == 0),
+            self.game_state.scores[1] + (idx == 1)
+        )
+        self.game_state.reset_ball()
+
+    def add_win(self, idx):
+        self.game_state.wins = (
+            self.game_state.wins[0] + (idx == 0),
+            self.game_state.wins[1] + (idx == 1)
+        )
+        self.game_state.reset()
+
+    def move_ball(self):
+        ball = self.game_state.get_ball()
+        ball.move()
+        top_left_x, top_left_y, bottom_right_x, bottom_right_y = ball.get_box()
+        dir_x, dir_y = ball.get_direction()
+
+        if bottom_right_y <= 0:
+            self.add_score(1)
+        elif top_left_y >= self.game_state.window_height:
+            self.add_score(0)
+        elif (top_left_x <= 0 and dir_x < 0 or
+                bottom_right_x >= self.game_state.window_width and dir_x > 0):
+            ball.reflect_x()
+
+        if self.game_state.scores[0] >= GameState.WIN_SCORE:
+            self.add_win(0)
+        if self.game_state.scores[1] >= GameState.WIN_SCORE:
+            self.add_win(1)
 
 
 class Controller:

@@ -84,6 +84,12 @@ class Ball(object):
             self.pos[1] + self.direction[1]
         )
 
+    def reflect_x(self):
+        self.direction = (
+            -self.direction[0],
+            self.direction[1]
+        )
+
     def reflect(self, platform, up):
         """Reflects ball direction.
 
@@ -274,19 +280,33 @@ class GameState(object):
         platform1 (obj): the first player platform.
         platform2 (obj): the second player platform.
         current_frame (int): the number of current game frame.
-
+    
+    Class Attributes:
+        WIN_SCORE (int): scores to win.
     """
+    WIN_SCORE = 3
+
     def __init__(self, window_width, window_height):
-        self.ball = Ball(window_width / 2, window_height / 2)
+        self.window_width = window_width
+        self.window_height = window_height
+        self.current_frame = 0
+        self.wins = (0, 0)
+        self.reset()
+
+    def reset(self):
+        self.reset_ball()
         self.platform1 = Platform(
-            pos_x=(window_width / 2),
-            pos_y=(window_height - Platform.PADDING)
+            pos_x=(self.window_width / 2),
+            pos_y=(self.window_height - Platform.PADDING)
         )
         self.platform2 = Platform(
-            pos_x=(window_width / 2),
+            pos_x=(self.window_width / 2),
             pos_y=Platform.PADDING
         )
-        self.current_frame = 0
+        self.scores = (0, 0)
+
+    def reset_ball(self):
+        self.ball = Ball(self.window_width / 2, self.window_height / 2)
 
     def get_current_frame(self):
         """Returns current frame number.
@@ -296,6 +316,15 @@ class GameState(object):
 
         """
         return self.current_frame
+
+    def get_scores(self):
+        return self.scores
+
+    def get_wins(self):
+        return self.wins
+
+    def get_window_size(self):
+        return (self.window_width, self.window_height)
 
     def increment_current_frame(self):
         """Increment current frame number."""
