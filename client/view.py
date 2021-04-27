@@ -50,16 +50,16 @@ class GameField(tk.Canvas):
         wins = game_state.get_wins()
         self.create_text(window_size[0] - 100, 22,
                          text='current score:\t' + str(scores[0]),
-                         justify=tk.LEFT, font="Verdana 14")
+                         justify=tk.LEFT, font="Calibri 14")
         self.create_text(window_size[0] - 100, 10,
                          text='current wins:\t' + str(wins[0]),
-                         justify=tk.LEFT, font="Verdana 14")
+                         justify=tk.LEFT, font="Calibri 14")
         self.create_text(window_size[0] - 100, window_size[1] - 10,
                          text='current score:\t' + str(scores[1]),
-                         justify=tk.LEFT, font="Verdana 14")
+                         justify=tk.LEFT, font="Calibri 14")
         self.create_text(window_size[0] - 100, window_size[1] - 22,
                          text='current wins:\t' + str(wins[1]),
-                         justify=tk.LEFT, font="Verdana 14")
+                         justify=tk.LEFT, font="Calibri 14")
 
     def sync_with_server(self):
         self.controller.on_sync_with_server()
