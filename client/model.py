@@ -163,10 +163,19 @@ class GameState(object):
             pos_x=(window_width / 2),
             pos_y=Platform.PADDING
         )
+        self.window_width = window_width
+        self.window_height = window_height
         self.current_frame = 0
+        self.scores = (0, 0)
 
     def get_current_frame(self):
         return self.current_frame
+
+    def get_scores(self):
+        return self.scores
+
+    def get_window_size(self):
+        return (self.window_width, self.window_height)
 
     def increment_current_frame(self):
         self.current_frame += 1
@@ -180,6 +189,26 @@ class GameState(object):
 
     def get_ball(self):
         return self.ball
+
+    def move_ball(self):
+        self.ball.move()
+        ball_box = self.ball.get_box()
+        top_left_y = ball_box[1]
+        bottom_right_y = ball_box[3]
+
+        if bottom_right_y <= 0:
+            self.scores = (
+                self.scores[0],
+                self.scores[1] + 1
+            )
+            self.ball = Ball(self.window_width / 2, self.window_height / 2)
+
+        if top_left_y >= self.window_height:
+            self.scores = (
+                self.scores[0] + 1,
+                self.scores[1]
+            )
+            self.ball = Ball(self.window_width / 2, self.window_height / 2)
 
 
 class NetworkConnection(object):

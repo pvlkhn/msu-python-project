@@ -23,7 +23,7 @@ class GameLogicController:
             ball.reflect(platform0, False)
         if ball.is_intersect(platform1, True) and ball.is_move_to(platform1):
             ball.reflect(platform1, True)
-        ball.move()
+        self.game_state.move_ball()
 
         self.inputs = (set(), set())
 
