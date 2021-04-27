@@ -1,5 +1,6 @@
 import tkinter as tk
 import requests
+from .utils import translate
 
 from client.controller import Controller
 
@@ -87,12 +88,12 @@ class LobbyBrowserWindow(tk.Frame):
         )
         self.refresh_button = tk.Button(
             master=self,
-            text="Refresh",
+            text=translate("Refresh"),
             command=self.refresh_games_list
         )
         self.create_game_button = tk.Button(
             master=self,
-            text="Create game",
+            text=translate("Create game"),
             command=self.create_game
         )
         self.games_list = tk.Listbox(
@@ -100,12 +101,12 @@ class LobbyBrowserWindow(tk.Frame):
         )
         self.join_game_button = tk.Button(
             master=self,
-            text="Join",
+            text=translate("Join"),
             command=self.join_selected_game
         )
         self.server_status = tk.Label(
             master=self,
-            text="Checking server status..."
+            text=translate("Checking server status...")
         )
 
         self.server_address_label.pack(fill=tk.BOTH)
@@ -127,7 +128,7 @@ class LobbyBrowserWindow(tk.Frame):
                 self.games_list.insert(tk.END, game_name)
             self.server_status.config(text="")
         except requests.exceptions.ConnectionError:
-            self.server_status.config(text="Could not connect to server!")
+            self.server_status.config(text=translate("Could not connect to server!"))
 
     def create_game(self):
         requests.post(
