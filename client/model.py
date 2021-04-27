@@ -16,6 +16,21 @@ Controls = Enum("Controls", [
 
 
 class Ball(object):
+    """Ball to play the game.
+
+    Args:
+        pos_x (float): x coordinate of the ball center.
+        pos_y (float): y coordinate of the ball center.
+
+    Attributes:
+        pos (tuple): coordinates of the ball center.
+        direction (tuple): direction of the ball.
+
+    Class Attributes:
+        RADIUS (int): ball radius.
+        DEFAULT_SPEED (int): ball default speed.
+
+    """
     RADIUS = 10
     DEFAULT_SPEED = 5
 
@@ -24,6 +39,16 @@ class Ball(object):
         self.direction = (0, Ball.DEFAULT_SPEED)
 
     def get_box(self):
+        """Returns box coordinates.
+
+        Returns:
+            (tuple): tuple containing:
+                top_left_x (float): left x coordinate
+                top_left_y (float): top y coordinate
+                bottom_right_x (float): right x coordinate
+                bottom_right_y (float): bottom y coordinate
+
+        """
         top_left_x = self.pos[0] - Ball.RADIUS
         top_left_y = self.pos[1] - Ball.RADIUS
         bottom_right_x = self.pos[0] + Ball.RADIUS
@@ -31,18 +56,42 @@ class Ball(object):
         return top_left_x, top_left_y, bottom_right_x, bottom_right_y
 
     def get_direction(self):
+        """Returns direction.
+
+        Returns:
+            (tuple): tuple containing:
+                direction_x (float): direction x coordinate
+                direction_y (float): direction y coordinate
+
+        """
         return self.direction
 
     def get_pos(self):
+        """Returns center coordinates.
+
+        Returns:
+            (tuple): tuple containing:
+                dposition_x (float): position x coordinate
+                position_y (float): position y coordinate
+
+        """
         return self.pos
 
     def move(self):
+        """Changes position according to current direction."""
         self.pos = (
             self.pos[0] + self.direction[0],
             self.pos[1] + self.direction[1]
         )
 
     def reflect(self, platform, up):
+        """Reflects ball direction.
+
+        Args:
+            platform: The platform from which the ball is reflected.
+            up (bool): If ball reflects from the top of a platform.
+
+        """
         self.direction = (
             self.direction[0],
             -self.direction[1]
@@ -71,6 +120,16 @@ class Ball(object):
                                              self.direction[1])
 
     def is_intersect(self, platform, up):
+        """Checks if ball intersects the platform.
+
+        Args:
+            platform: The platform from which the ball is reflected.
+            up (bool): If ball reflects from the top of a platform.
+
+        Returns:
+            bool: True if ball intersects the platform, False otherwise.
+
+        """
         ball_center = self.get_pos()
         platform_box = platform.get_box()
         x1, y1, x2, y2 = platform_box[4:8] if up else platform_box[:4]
@@ -92,6 +151,15 @@ class Ball(object):
             return False
 
     def is_move_to(self, platform):
+        """Checks if ball moves to the platform.
+
+        Args:
+            platform: The platform from which the ball is reflected.
+
+        Returns:
+            bool: True if ball moves to the platform, False otherwise.
+
+        """
         ball_center = self.get_pos()
         ball_direction = self.get_direction()
         platform_center = platform.get_pos()
@@ -100,6 +168,27 @@ class Ball(object):
 
 
 class Platform(object):
+    """Platform to play the game.
+
+    Args:
+        pos_x (float): x coordinate of the platform center.
+        pos_y (float): y coordinate of the platform center.
+
+    Attributes:
+        pos (tuple): coordinates of the platform center.
+        direction (tuple): direction of the platform.
+        angle (float): angle of the platform.
+        rotation_speed (float): rotation speed of the platform.
+        horizontal_speed (float): horizontal speed of the platform.
+
+    Class Attributes:
+        WIDTH (int): platform width.
+        HEIGHT (int): platform height.
+        PADDING (int): platform padding.
+        DEFAULT_SPEED (int): platform default speed.
+        DEFAULT_ROTATION (int): platform default rotation.
+
+    """
     WIDTH = 100
     HEIGHT = 20
     PADDING = 40
@@ -114,6 +203,13 @@ class Platform(object):
         self.horizontal_speed = Platform.DEFAULT_SPEED
 
     def get_box(self):
+        """Returns box coordinates.
+
+        Returns:
+            (tuple): tuple containing:
+
+        """
+        #TODO: write returns
         x_tl = x_bl = - Platform.WIDTH / 2
         y_tl = y_tr = - Platform.HEIGHT / 2
         x_tr = x_br = Platform.WIDTH / 2
@@ -135,9 +231,23 @@ class Platform(object):
                 y_bl, x_tl, y_tl)
 
     def get_pos(self):
+        """Returns center coordinates.
+
+        Returns:
+            (tuple): tuple containing:
+                dposition_x (float): position x coordinate
+                position_y (float): position y coordinate
+
+        """
         return self.pos
 
     def move(self, direction: Controls):
+        """Changes position according to direction.
+
+        Args:
+            direction: The direction in which the position changes.
+
+        """
         if direction == Controls.MOVE_LEFT:
             self.pos = (self.pos[0] - self.horizontal_speed, self.pos[1])
         elif direction == Controls.MOVE_RIGHT:
@@ -153,6 +263,19 @@ class Platform(object):
 
 
 class GameState(object):
+    """State containign full information about the game.
+
+    Args:
+        window_width (float): width of game field.
+        window_height (float): height of game field.
+
+    Attributes:
+        ball (obj): ball to play the game.
+        platform1 (obj): the first player platform.
+        platform2 (obj): the second player platform.
+        current_frame (int): the number of current game frame.
+
+    """
     def __init__(self, window_width, window_height):
         self.ball = Ball(window_width / 2, window_height / 2)
         self.platform1 = Platform(
@@ -166,12 +289,28 @@ class GameState(object):
         self.current_frame = 0
 
     def get_current_frame(self):
+        """Returns current frame number.
+
+        Returns:
+            int: Current frame number.
+
+        """
         return self.current_frame
 
     def increment_current_frame(self):
+        """Increment current frame number."""
         self.current_frame += 1
 
     def get_platform(self, idx):
+        """Returns platform according to given index.
+
+        Args:
+            idx: The index of required platform.
+
+        Returns:
+            Platform.
+
+        """
         assert idx in {0, 1}
         if idx == 0:
             return self.platform1
@@ -179,36 +318,90 @@ class GameState(object):
             return self.platform2
 
     def get_ball(self):
+        """Returns ball.
+
+        Returns:
+            Ball.
+
+        """
         return self.ball
 
 
 class NetworkConnection(object):
+    """Class to connect between two players.
+
+    Args:
+        host (str): host name.
+        port (int): port number.
+        timeout (float): timeout in seconds.
+
+    Attributes:
+        socket (obj): socket to connect.
+
+    """
     def __init__(self, host: str, port: int, timeout: float = 1.0):
         self.socket = Socket()
         self.socket.connect(host, port, timeout)
 
     def send(self, frame, data):
+        """Serialzes and sends data.
+
+        Args:
+            frame (int): Frame number.
+            data: Data to send.
+
+        """
         self.socket.send(serialize((frame, data)))
 
     def read(self):
+        """Deserialzes and reads data.
+
+        Returns:
+            (list): list containing:
+
+        """
+        #TODO: write returns
         return [deserialize(e) for e in poll(self.socket.recv)]
 
 
 class StateCache:
+    """Cache to keep states in a buffer.
+
+    Args:
+        size (int): number of states to keep.
+
+    Attributes:
+        size (int): number of states to keep.
+        states (list): buffer for states keeping.
+
+    """
     def __init__(self, size: int):
         self.size = size
         self.states = []
 
     def push(self, state):
+       """Pushes state to buffer.
+
+        Args:
+            state: State to push.
+
+        """
         self.states.append(state)
         self.__shrink()
 
     def pop(self):
+       """Pops state from buffer.
+
+        Returns:
+            State first added to the buffer.
+
+        """
         if len(self.states) == 0:
             return None
         head, self.states = self.states[0], self.states[1:]
         return head
 
     def __shrink(self):
+        """Shrinks states buffer to defined size."""
         starting_index = max(len(self.states) - self.size, 0)
         self.states = self.states[starting_index:]
