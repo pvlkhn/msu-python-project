@@ -116,7 +116,7 @@ def test_line_by_two_points():
             is_close(ans4[2], 12))
     assert (is_close(ans5[0], 0) and
             is_close(ans5[1], -1) and
-            is_close(ans5[2], 0)) and False
+            is_close(ans5[2], 0))
 
 
 def test_l2_norm():
