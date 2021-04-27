@@ -5,7 +5,10 @@ version = open('client/VERSION').read()
 setup(
     name='csmsu2020_pong_game',
     packages=['client', 'common'],
-    package_data={'': ['localization/en_US/LC_MESSAGES/messages.mo', 'localization/ru_RU/LC_MESSAGES/messages.mo']},
+    package_data={'': [
+        'localization/en_US/LC_MESSAGES/messages.mo',
+        'localization/ru_RU/LC_MESSAGES/messages.mo'
+    ]},
     include_package_data=True,
     version=version,
     entry_points={

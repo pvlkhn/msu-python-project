@@ -128,7 +128,9 @@ class LobbyBrowserWindow(tk.Frame):
                 self.games_list.insert(tk.END, game_name)
             self.server_status.config(text="")
         except requests.exceptions.ConnectionError:
-            self.server_status.config(text=translate("Could not connect to server!"))
+            self.server_status.config(
+                text=translate("Could not connect to server!")
+            )
 
     def create_game(self):
         requests.post(

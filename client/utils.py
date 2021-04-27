@@ -3,9 +3,16 @@ import pkg_resources
 from math import sin, cos, acos
 from babel.support import Translations
 
+
 def load_translations():
-    localizations_dir = pkg_resources.resource_filename('client', 'localization')
-    return Translations.load(localizations_dir, [os.getenv('LC_LANGUAGE'), 'en_US'])
+    localizations_dir = pkg_resources.resource_filename(
+        package_or_requirement='client',
+        resource_name='localization'
+    )
+    return Translations.load(
+        dirname=localizations_dir,
+        locales=[os.getenv('LC_LANGUAGE'), 'en_US']
+    )
 
 
 def translate(text, translations=load_translations()):
