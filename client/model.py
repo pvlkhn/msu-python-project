@@ -153,19 +153,25 @@ class Platform(object):
 
 
 class GameState(object):
+    WIN_SCORE = 3
+
     def __init__(self, window_width, window_height):
-        self.ball = Ball(window_width / 2, window_height / 2)
-        self.platform1 = Platform(
-            pos_x=(window_width / 2),
-            pos_y=(window_height - Platform.PADDING)
-        )
-        self.platform2 = Platform(
-            pos_x=(window_width / 2),
-            pos_y=Platform.PADDING
-        )
         self.window_width = window_width
         self.window_height = window_height
         self.current_frame = 0
+        self.wins = (0, 0)
+        self.reset()
+
+    def reset(self):
+        self.ball = Ball(self.window_width / 2, self.window_height / 2)
+        self.platform1 = Platform(
+            pos_x=(self.window_width / 2),
+            pos_y=(self.window_height - Platform.PADDING)
+        )
+        self.platform2 = Platform(
+            pos_x=(self.window_width / 2),
+            pos_y=Platform.PADDING
+        )
         self.scores = (0, 0)
 
     def get_current_frame(self):
@@ -173,6 +179,9 @@ class GameState(object):
 
     def get_scores(self):
         return self.scores
+
+    def get_wins(self):
+        return self.wins
 
     def get_window_size(self):
         return (self.window_width, self.window_height)
@@ -209,6 +218,19 @@ class GameState(object):
                 self.scores[1]
             )
             self.ball = Ball(self.window_width / 2, self.window_height / 2)
+
+        if self.scores[0] >= GameState.WIN_SCORE:
+            self.wins = (
+                self.wins[0] + 1,
+                self.wins[1]
+            )
+            self.reset()
+        if self.scores[1] >= GameState.WIN_SCORE:
+            self.wins = (
+                self.wins[0],
+                self.wins[1] + 1
+            )
+            self.reset()
 
 
 class NetworkConnection(object):
