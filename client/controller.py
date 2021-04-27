@@ -55,7 +55,7 @@ class GameLogicController:
             self.add_score(1)
         elif top_left_y >= self.game_state.window_height:
             self.add_score(0)
-        elif (top_left_x <= 0 and dir_x < 0 or 
+        elif (top_left_x <= 0 and dir_x < 0 or
                 bottom_right_x >= self.game_state.window_width and dir_x > 0):
             ball.reflect_x()
 
