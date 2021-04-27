@@ -42,6 +42,12 @@ class Ball(object):
             self.pos[1] + self.direction[1]
         )
 
+    def reflect_x(self):
+        self.direction = (
+            -self.direction[0],
+            self.direction[1]
+        )
+
     def reflect(self, platform, up):
         self.direction = (
             self.direction[0],
