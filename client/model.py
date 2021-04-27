@@ -215,7 +215,7 @@ class Platform(object):
             (tuple): tuple containing:
 
         """
-        #TODO: write returns
+        # TODO: write returns
         x_tl = x_bl = - Platform.WIDTH / 2
         y_tl = y_tr = - Platform.HEIGHT / 2
         x_tr = x_br = Platform.WIDTH / 2
@@ -280,9 +280,10 @@ class GameState(object):
         platform1 (obj): the first player platform.
         platform2 (obj): the second player platform.
         current_frame (int): the number of current game frame.
-    
+
     Class Attributes:
         WIN_SCORE (int): scores to win.
+
     """
     WIN_SCORE = 3
 
@@ -389,7 +390,7 @@ class NetworkConnection(object):
             (list): list containing:
 
         """
-        #TODO: write returns
+        # TODO: write returns
         return [deserialize(e) for e in poll(self.socket.recv)]
 
 
@@ -409,7 +410,7 @@ class StateCache:
         self.states = []
 
     def push(self, state):
-       """Pushes state to buffer.
+        """Pushes state to buffer.
 
         Args:
             state: State to push.
@@ -419,7 +420,7 @@ class StateCache:
         self.__shrink()
 
     def pop(self):
-       """Pops state from buffer.
+        """Pops state from buffer.
 
         Returns:
             State first added to the buffer.
