@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2021-04-27 23:38+0300\n"
+"POT-Creation-Date: 2021-04-28 18:57+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,31 +17,39 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.9.0\n"
 
-#: __main__.py:14
+#: __main__.py:15
 msgid "Pong game"
 msgstr ""
 
-#: utils.py:31
+#: utils.py:50
 msgid "Lines are parallel!"
 msgstr ""
 
-#: view.py:91
+#: view.py:54 view.py:65
+msgid "current score"
+msgstr ""
+
+#: view.py:59 view.py:70
+msgid "current wins"
+msgstr ""
+
+#: view.py:101
 msgid "Refresh"
 msgstr ""
 
-#: view.py:96
+#: view.py:106
 msgid "Create game"
 msgstr ""
 
-#: view.py:104
+#: view.py:114
 msgid "Join"
 msgstr ""
 
-#: view.py:109
+#: view.py:119
 msgid "Checking server status..."
 msgstr ""
 
-#: view.py:131
+#: view.py:142
 msgid "Could not connect to server!"
 msgstr ""
 

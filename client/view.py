@@ -1,6 +1,6 @@
 import tkinter as tk
 import requests
-from .utils import translate
+from .utils import gettext
 
 from client.controller import Controller
 
@@ -49,18 +49,28 @@ class GameField(tk.Canvas):
         window_size = game_state.get_window_size()
         scores = game_state.get_scores()
         wins = game_state.get_wins()
-        self.create_text(window_size[0] - 100, 22,
-                         text='current score:\t' + str(scores[0]),
-                         justify=tk.LEFT, font="Calibri 14")
-        self.create_text(window_size[0] - 100, 10,
-                         text='current wins:\t' + str(wins[0]),
-                         justify=tk.LEFT, font="Calibri 14")
-        self.create_text(window_size[0] - 100, window_size[1] - 10,
-                         text='current score:\t' + str(scores[1]),
-                         justify=tk.LEFT, font="Calibri 14")
-        self.create_text(window_size[0] - 100, window_size[1] - 22,
-                         text='current wins:\t' + str(wins[1]),
-                         justify=tk.LEFT, font="Calibri 14")
+        self.create_text(
+            window_size[0] - 100, 22,
+            text=gettext('current score') + ':\t' + str(scores[0]),
+            justify=tk.LEFT, font="Calibri 14"
+        )
+        self.create_text(
+            window_size[0] - 100, 10,
+            text=gettext('current wins') + ':\t' + str(wins[0]),
+            justify=tk.LEFT,
+            font="Calibri 14"
+        )
+        self.create_text(
+            window_size[0] - 100, window_size[1] - 10,
+            text=gettext('current score') + ':\t' + str(scores[1]),
+            justify=tk.LEFT, font="Calibri 14"
+        )
+        self.create_text(
+            window_size[0] - 100, window_size[1] - 22,
+            text=gettext('current wins') + ':\t' + str(wins[1]),
+            justify=tk.LEFT,
+            font="Calibri 14"
+        )
 
     def sync_with_server(self):
         self.controller.on_sync_with_server()
@@ -88,12 +98,12 @@ class LobbyBrowserWindow(tk.Frame):
         )
         self.refresh_button = tk.Button(
             master=self,
-            text=translate("Refresh"),
+            text=gettext("Refresh"),
             command=self.refresh_games_list
         )
         self.create_game_button = tk.Button(
             master=self,
-            text=translate("Create game"),
+            text=gettext("Create game"),
             command=self.create_game
         )
         self.games_list = tk.Listbox(
@@ -101,12 +111,12 @@ class LobbyBrowserWindow(tk.Frame):
         )
         self.join_game_button = tk.Button(
             master=self,
-            text=translate("Join"),
+            text=gettext("Join"),
             command=self.join_selected_game
         )
         self.server_status = tk.Label(
             master=self,
-            text=translate("Checking server status...")
+            text=gettext("Checking server status...")
         )
 
         self.server_address_label.pack(fill=tk.BOTH)
@@ -129,7 +139,7 @@ class LobbyBrowserWindow(tk.Frame):
             self.server_status.config(text="")
         except requests.exceptions.ConnectionError:
             self.server_status.config(
-                text=translate("Could not connect to server!")
+                text=gettext("Could not connect to server!")
             )
 
     def create_game(self):

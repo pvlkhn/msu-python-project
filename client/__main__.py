@@ -1,7 +1,7 @@
 from .model import GameState, NetworkConnection, StateCache
 from .view import GameWindow, LobbyBrowserWindow
 from .controller import Controller, GameLogicController
-from .utils import translate
+from .utils import gettext
 
 import tkinter as tk
 
@@ -12,7 +12,7 @@ class Application(tk.Tk):
 
     def __init__(self):
         super().__init__()
-        self.title(translate("Pong game"))
+        self.title(gettext("Pong game"))
         self.minsize(Application.WIDTH, Application.HEIGHT)
 
         self.frame = tk.Frame(master=self)

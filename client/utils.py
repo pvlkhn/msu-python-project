@@ -15,7 +15,7 @@ def load_translations():
     )
 
 
-def translate(text, translations=load_translations()):
+def gettext(text, translations=load_translations()):
     return translations.gettext(text)
 
 
@@ -46,7 +46,7 @@ def normal(a, b, x, y):
 
 def intersect(a, b, c, a1, b1, c1):
     if abs(a * b1 - a1 * b) < 1e-10:
-        raise ValueError(translate("Lines are parallel!"))
+        raise ValueError(gettext("Lines are parallel!"))
     x = (c1 * b - c * b1) / (a * b1 - a1 * b)
     y = (a1 * c - a * c1) / (a * b1 - a1 * b)
     return x, y
