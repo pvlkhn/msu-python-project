@@ -7,8 +7,8 @@ EPS = 1e-4
 
 
 def is_close(a, b):
-    """
-    Check if numbers are closer enough
+    """Check if numbers are close enough.
+
     Args:
         a (float): first number
         b (float): second number
