@@ -19,10 +19,10 @@ class GameLogicController:
         platform0 = self.game_state.get_platform(0)
         platform1 = self.game_state.get_platform(1)
 
-        if ball.is_intersect(platform0, False) and ball.is_move_to(platform0):
-            ball.reflect(platform0, False)
-        if ball.is_intersect(platform1, True) and ball.is_move_to(platform1):
-            ball.reflect(platform1, True)
+        if ball.is_intersect(platform0) and ball.is_move_to(platform0):
+            ball.reflect(platform0)
+        if ball.is_intersect(platform1) and ball.is_move_to(platform1):
+            ball.reflect(platform1)
 
         self.move_ball()
 
