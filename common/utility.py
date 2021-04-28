@@ -1,9 +1,11 @@
+"""Utility functions for network code."""
+
 import pickle
 from typing import Optional
 
 
 def poll(function: callable, stop_value=None):
-    """A generator to iterate over values returned by given function
+    """Return a generator that iterates over values returned by given function.
 
     :param function: a callable with no required arguments to fetch values from
     :param stop_value: a value returned by a callable to stop iteration at
@@ -17,7 +19,7 @@ def poll(function: callable, stop_value=None):
 
 
 def serialize(obj) -> bytes:
-    """Serialize object into `bytes`
+    """Serialize object into `bytes`.
 
     :param obj: object to serialize
     :return: `bytes` object
@@ -27,7 +29,7 @@ def serialize(obj) -> bytes:
 
 
 def deserialize(data: Optional[bytes]) -> Optional[object]:
-    """Deserialize given `bytes` data into python object
+    """Deserialize given `bytes` data into python object.
 
     :param data: `bytes` representation of an object
     :return: deserialized object or `None`, if input data is also `None`

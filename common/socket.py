@@ -1,17 +1,19 @@
+"""Abstraction classes for low-level sockets."""
+
 import select
 import socket
 from typing import Optional
 
 
 class Socket:
-    """An abstraction for non-blocking socket"""
+    """An abstraction for non-blocking socket."""
 
     BYTEORDER = "little"
     BUFFER_SIZE = 1024
     SIZE_BYTES = 2
 
     def __init__(self, sock: Optional[socket.socket] = None):
-        """Create a new socket
+        """Create a new socket.
 
         :param sock: optional `socket.socket` to build an instance on;
                      if `None` (by default), a new socket is created
@@ -23,7 +25,7 @@ class Socket:
         self.__recv_buffer = bytes()
 
     def connect(self, host: str, port: int, timeout: float) -> None:
-        """Connect to remote socket given its hostname and port number
+        """Connect to remote socket given its hostname and port number.
 
         :param host: string, remote hostname
         :param port: integer, remote port
@@ -35,7 +37,7 @@ class Socket:
         self.socket.settimeout(0)
 
     def is_connected(self) -> bool:
-        """Test if socket currently connected to a remote socket
+        """Test if socket currently connected to a remote socket.
 
         :return: `True` if socket is connected to some remote socket,
                  `False` otherwise
@@ -51,7 +53,7 @@ class Socket:
             return False
 
     def send(self, data: bytes) -> None:
-        """Send given data to connected remote socket
+        """Send given data to connected remote socket.
 
         :param data: `bytes` object representing data to be sent
         :return: `None`
@@ -65,7 +67,7 @@ class Socket:
             raise RuntimeError("Unable to send all the data required")
 
     def recv(self) -> Optional[bytes]:
-        """Receive data from connected remote socket
+        """Receive data from connected remote socket.
 
         :return: `bytes` object, if there's any data received,
                  or `None`, otherwise
@@ -90,10 +92,10 @@ class Socket:
 
 
 class Listener:
-    """An abstraction for socket bound and listening on some port"""
+    """An abstraction for socket bound and listening on some port."""
 
     def __init__(self, port: int, backlog: int = 0):
-        """Create a new listening socket
+        """Create a new listening socket.
 
         :param port: integer, a port to bind socket to;
                      if 0, a free port will be allocated by OS
@@ -105,21 +107,21 @@ class Listener:
         self.socket.listen(backlog)
 
     def get_host(self) -> str:
-        """Returns the hostname that socket is bound to
+        """Return the hostname that socket is bound to.
 
         :return: the hostname of underlying `socket` object
         """
         return self.socket.getsockname()[0]
 
     def get_port(self) -> int:
-        """Returns the port number that socket is bound to
+        """Return the port number that socket is bound to.
 
         :return: the port number of underlying `socket` object
         """
         return int(self.socket.getsockname()[1])
 
     def accept(self) -> Optional[Socket]:
-        """Accepts one pending connection, if there are any
+        """Accept one pending connection, if there are any.
 
         :return: `Socket` object connecting to some remote socket, if there
                  is at least one connection to accept, or `None`, otherwise
