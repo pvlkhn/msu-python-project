@@ -1,12 +1,20 @@
 from math import isclose
 
 from client.utils import intersect, normal, line_by_two_points, l2_norm
-from client.utils import vector_rotation, vector_angle, line_by_vector, clip
+from client.utils import vector_rotation, vector_angle, line_by_vector
 
 EPS = 1e-4
 
 
 def is_close(a, b):
+    """
+    Check if numbers are closer enough
+    Args:
+        a (float): first number
+        b (float): second number
+    Returns:
+        bool
+    """
     return isclose(a, b, abs_tol=EPS, rel_tol=EPS)
 
 
@@ -122,14 +130,3 @@ def test_line_by_two_points():
 def test_l2_norm():
     assert (is_close(l2_norm([3, 4, 4, 2]), 6.7082))
     assert (is_close(l2_norm([3, -4, 54, 2, 5]), 54.4977))
-
-
-def test_clip():
-    assert (is_close(clip(3, 4, 6), 4))
-    assert (is_close(clip(4, 4, 6), 4))
-    assert (is_close(clip(5, 3, 4), 4))
-    try:
-        _ = clip(3, 4, 3)
-        assert False
-    except AssertionError:
-        pass
