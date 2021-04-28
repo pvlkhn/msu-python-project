@@ -102,7 +102,7 @@ class Ball(object):
             self.direction[1]
         )
 
-    def reflect(self, platform, up):
+    def reflect(self, platform):
         """Reflect ball direction.
 
         Args:
@@ -110,13 +110,10 @@ class Ball(object):
             up (bool): If ball reflects from the top of a platform.
 
         """
-        self.direction = (
-            self.direction[0],
-            -self.direction[1]
-        )
+        up = platform.is_up
         ball_center = self.get_pos()
         platform_box = platform.get_box()
-        x1, y1, x2, y2 = platform_box[4:8] if up else platform_box[:4]
+        x1, y1, x2, y2 = platform_box[:4] if up else platform_box[4:8]
         # platform line
         a1, b1, c1 = line_by_two_points(x1, x2, y1, y2)
         # platform normal
@@ -124,20 +121,24 @@ class Ball(object):
         # ball line
         a3, b3, c3 = line_by_vector(ball_center[0], ball_center[1],
                                     self.direction[0], self.direction[1])
-        # angle
+        # angle between ball_line and platform_normal
         alpha = vector_angle(a2, a3, b2, b3)
+        if pi >= alpha > pi / 2:
+            alpha = pi - alpha
+        if alpha > pi:
+            alpha = 2 * pi - alpha
         a = vector_angle(self.direction[0], x2 - x1,
                          self.direction[1], y2 - y1)
-        self.direction = vector_rotation(pi * 2, self.direction[0],
+        self.direction = vector_rotation(pi, self.direction[0],
                                          self.direction[1])
-        if a < pi / 2:
+        if a > pi / 2:
             self.direction = vector_rotation(-2 * alpha, self.direction[0],
                                              self.direction[1])
         else:
             self.direction = vector_rotation(2 * alpha, self.direction[0],
                                              self.direction[1])
 
-    def is_intersect(self, platform, up):
+    def is_intersect(self, platform):
         """Check if ball intersects the platform.
 
         Args:
@@ -148,9 +149,10 @@ class Ball(object):
             bool: True if ball intersects the platform, False otherwise.
 
         """
+        up = platform.is_up
         ball_center = self.get_pos()
         platform_box = platform.get_box()
-        x1, y1, x2, y2 = platform_box[4:8] if up else platform_box[:4]
+        x1, y1, x2, y2 = platform_box[:4] if up else platform_box[4:8]
 
         distance = (abs((y2 - y1) * ball_center[0] - (x2 - x1) *
                         ball_center[1] + x2 * y1 - x1 * y2) /
@@ -210,7 +212,7 @@ class Platform(object):
     DEFAULT_SPEED = 5
     DEFAULT_ROTATION = 0.1
 
-    def __init__(self, pos_x, pos_y):
+    def __init__(self, pos_x, pos_y, is_up=True):
         """Platform to play the game.
 
         Args:
@@ -223,6 +225,7 @@ class Platform(object):
         self.angle = 0
         self.rotation_speed = Platform.DEFAULT_ROTATION
         self.horizontal_speed = Platform.DEFAULT_SPEED
+        self.is_up = is_up
 
     def get_box(self):
         """Return box coordinates.
@@ -318,11 +321,13 @@ class GameState(object):
         self.reset_ball()
         self.platform1 = Platform(
             pos_x=(self.window_width / 2),
-            pos_y=(self.window_height - Platform.PADDING)
+            pos_y=(self.window_height - Platform.PADDING),
+            is_up=True
         )
         self.platform2 = Platform(
             pos_x=(self.window_width / 2),
-            pos_y=Platform.PADDING
+            pos_y=Platform.PADDING,
+            is_up=False
         )
         self.scores = (0, 0)
 

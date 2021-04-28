@@ -36,14 +36,21 @@ class GameField(tk.Canvas):
         self.sync_with_server()
 
     def redraw(self):
+        def draw_platform(platform):
+            box = platform.get_box()
+            if not platform.is_up:
+                self.create_line(box[4:8], width=1.5)
+                self.create_line(box)
+            else:
+                self.create_line(box[:4], width=1.5)
+                self.create_line(box[2:])
+
         self.delete("all")
         game_state = self.controller.game_controller.game_state
-        platform1 = game_state.get_platform(0).get_box()
-        platform2 = game_state.get_platform(1).get_box()
-        self.create_line(platform2[4:8], width=1.5)
-        self.create_line(platform2)
-        self.create_line(platform1[:4], width=1.5)
-        self.create_line(platform1[2:])
+        platform1 = game_state.get_platform(0)
+        platform2 = game_state.get_platform(1)
+        draw_platform(platform1)
+        draw_platform(platform2)
         self.create_oval(*game_state.get_ball().get_box())
 
         window_size = game_state.get_window_size()
