@@ -51,7 +51,7 @@ class GameServer:
                             )
                             self.__game_controller.on_input(player,
                                                             player_input)
-                except:
+                except ConnectionResetError:
                     self.stop()
                     self.__is_broken = True
                     self.__player_sockets = []
