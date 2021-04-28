@@ -31,7 +31,6 @@ class GameServer:
         self.__game_controller = GameLogicController(GameState(800, 600))
         self.__thread = threading.Thread(target=self.run)
         self.__num_play_ticks = 0
-        self.__is_broken = False
         self.port = self.__listener.get_port()
 
     def __on_tick(self):
@@ -53,7 +52,6 @@ class GameServer:
                                                             player_input)
                 except ConnectionResetError:
                     self.stop()
-                    self.__is_broken = True
                     self.__player_sockets = []
 
             self.__game_controller.on_tick()
@@ -96,6 +94,3 @@ class GameServer:
 
     def get_num_players_connected(self) -> int:
         return len(self.__player_sockets)
-
-    def is_broken(self):
-        return self.__is_broken

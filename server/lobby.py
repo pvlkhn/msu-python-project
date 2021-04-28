@@ -31,6 +31,15 @@ class Games:
 
     def get_all(self) -> List[Tuple[str, GameServer]]:
         """Returns a list of pairs `(game id, game)` all games in storage"""
+        games_to_delete = []
+
+        for id in self.__games:
+            game = self.__games[id]
+            if not game.is_running:
+                games_to_delete.append(id)
+
+        for id in games_to_delete:
+            self.remove(id)
         return list(self.__games.items())
 
     def add(self, game: GameServer) -> str:
@@ -76,8 +85,7 @@ class LobbyServer(Flask):
         @self.route("/games/")
         def get_all_games():
             return {g_id: get_game(g_id) for g_id, game in self.games.get_all()
-                    if (game.get_num_players_connected() < 2 and
-                        not game.is_broken())}
+                    if game.get_num_players_connected() < 2 and game.is_running}
 
         @self.route("/games/<game_id>/")
         def get_game(game_id):
