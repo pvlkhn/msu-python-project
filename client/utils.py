@@ -1,6 +1,4 @@
-"""
-Module with helpers.
-"""
+"""Module with helpers."""
 
 import os
 import pkg_resources
@@ -9,8 +7,8 @@ from babel.support import Translations
 
 
 def load_translations():
-    """
-    Load translations
+    """Load translations.
+
     Returns: Translations
     """
     localizations_dir = pkg_resources.resource_filename(
@@ -24,8 +22,8 @@ def load_translations():
 
 
 def gettext(text, translations=load_translations()):
-    """
-    Translate text
+    """Translate text.
+
     Args:
         text (str): text to translate
         translations (Translations): translations
@@ -36,8 +34,8 @@ def gettext(text, translations=load_translations()):
 
 
 def l2_norm(vec):
-    """
-    Calculate L2-norm
+    """Calculate L2-norm.
+
     Args:
         vec (iterable container): vector
     Returns:
@@ -52,8 +50,8 @@ def l2_norm(vec):
 
 
 def line_by_two_points(x1, x2, y1, y2):
-    """
-    Calculate line's coefficients by two points
+    """Calculate line's coefficients by two points.
+
     Args:
         x1 (float): x coordinate of the first point
         x2 (float): x coordinate of the second point
@@ -69,8 +67,8 @@ def line_by_two_points(x1, x2, y1, y2):
 
 
 def normal(a, b, x, y):
-    """
-    Calculate the line`s normal passing through a point
+    """Calculate the line`s normal passing through a point.
+
     Args:
         a (float): first line coefficient
         b (float): second line coefficient
@@ -83,8 +81,8 @@ def normal(a, b, x, y):
 
 
 def intersect(a, b, c, a1, b1, c1):
-    """
-    Calculate intersection point of two lines
+    """Calculate intersection point of two lines.
+
     Args:
         a (float): first coefficient of the first line
         b (float): second coefficient of the first line
@@ -103,8 +101,8 @@ def intersect(a, b, c, a1, b1, c1):
 
 
 def line_by_vector(x, y, d1, d2):
-    """
-    Calculate line's coefficients by point and direction vector
+    """Calculate line's coefficients by point and direction vector.
+
     Args:
         x (float): x coordinate of the point
         y (float): y coordinate of the point
@@ -122,8 +120,8 @@ def line_by_vector(x, y, d1, d2):
 
 
 def vector_angle(x1, x2, y1, y2):
-    """
-    Calculate angle between two vectors
+    """Calculate angle between two vectors.
+
     Args:
         x1 (float): first coordinate of the first vector
         x2 (float): second coordinate of the first vector
@@ -138,8 +136,8 @@ def vector_angle(x1, x2, y1, y2):
 
 
 def vector_rotation(alpha, d1, d2):
-    """
-    Rotate a vector by an angle
+    """Rotate a vector by an angle.
+
     Args:
         alpha (float): angle in radians
         d1 (float): first vector coordinate
