@@ -1,3 +1,10 @@
+"""Module with the basic logic of the game.
+
+Attributes:
+    Controls (obj): enumeration of platform possible actions.
+
+"""
+
 from .utils import line_by_two_points, normal, line_by_vector
 from .utils import vector_angle, vector_rotation, l2_norm
 
@@ -18,10 +25,6 @@ Controls = Enum("Controls", [
 class Ball(object):
     """Ball to play the game.
 
-    Args:
-        pos_x (float): x coordinate of the ball center.
-        pos_y (float): y coordinate of the ball center.
-
     Attributes:
         pos (tuple): coordinates of the ball center.
         direction (tuple): direction of the ball.
@@ -31,15 +34,23 @@ class Ball(object):
         DEFAULT_SPEED (int): ball default speed.
 
     """
+
     RADIUS = 10
     DEFAULT_SPEED = 5
 
     def __init__(self, pos_x, pos_y):
+        """Ball to play the game.
+
+        Args:
+            pos_x (float): x coordinate of the ball center.
+            pos_y (float): y coordinate of the ball center.
+
+        """
         self.pos = (pos_x, pos_y)
         self.direction = (0, Ball.DEFAULT_SPEED)
 
     def get_box(self):
-        """Returns box coordinates.
+        """Return box coordinates.
 
         Returns:
             (tuple): tuple containing:
@@ -56,7 +67,7 @@ class Ball(object):
         return top_left_x, top_left_y, bottom_right_x, bottom_right_y
 
     def get_direction(self):
-        """Returns direction.
+        """Return direction.
 
         Returns:
             (tuple): tuple containing:
@@ -67,7 +78,7 @@ class Ball(object):
         return self.direction
 
     def get_pos(self):
-        """Returns center coordinates.
+        """Return center coordinates.
 
         Returns:
             (tuple): tuple containing:
@@ -78,20 +89,21 @@ class Ball(object):
         return self.pos
 
     def move(self):
-        """Changes position according to current direction."""
+        """Change position according to current direction."""
         self.pos = (
             self.pos[0] + self.direction[0],
             self.pos[1] + self.direction[1]
         )
 
     def reflect_x(self):
+        """Reflect ball x coordinate direction."""
         self.direction = (
             -self.direction[0],
             self.direction[1]
         )
 
     def reflect(self, platform, up):
-        """Reflects ball direction.
+        """Reflect ball direction.
 
         Args:
             platform: The platform from which the ball is reflected.
@@ -126,7 +138,7 @@ class Ball(object):
                                              self.direction[1])
 
     def is_intersect(self, platform, up):
-        """Checks if ball intersects the platform.
+        """Check if ball intersects the platform.
 
         Args:
             platform: The platform from which the ball is reflected.
@@ -157,7 +169,7 @@ class Ball(object):
             return False
 
     def is_move_to(self, platform):
-        """Checks if ball moves to the platform.
+        """Check if ball moves to the platform.
 
         Args:
             platform: The platform from which the ball is reflected.
@@ -176,10 +188,6 @@ class Ball(object):
 class Platform(object):
     """Platform to play the game.
 
-    Args:
-        pos_x (float): x coordinate of the platform center.
-        pos_y (float): y coordinate of the platform center.
-
     Attributes:
         pos (tuple): coordinates of the platform center.
         direction (tuple): direction of the platform.
@@ -195,6 +203,7 @@ class Platform(object):
         DEFAULT_ROTATION (int): platform default rotation.
 
     """
+
     WIDTH = 100
     HEIGHT = 20
     PADDING = 40
@@ -202,6 +211,13 @@ class Platform(object):
     DEFAULT_ROTATION = 0.1
 
     def __init__(self, pos_x, pos_y):
+        """Platform to play the game.
+
+        Args:
+            pos_x (float): x coordinate of the platform center.
+            pos_y (float): y coordinate of the platform center.
+
+        """
         self.pos = (pos_x, pos_y)
         self.direction = (0, 0)
         self.angle = 0
@@ -209,7 +225,7 @@ class Platform(object):
         self.horizontal_speed = Platform.DEFAULT_SPEED
 
     def get_box(self):
-        """Returns box coordinates.
+        """Return box coordinates.
 
         Returns:
             (tuple): tuple containing:
@@ -237,7 +253,7 @@ class Platform(object):
                 y_bl, x_tl, y_tl)
 
     def get_pos(self):
-        """Returns center coordinates.
+        """Return center coordinates.
 
         Returns:
             (tuple): tuple containing:
@@ -248,7 +264,7 @@ class Platform(object):
         return self.pos
 
     def move(self, direction: Controls):
-        """Changes position according to direction.
+        """Change position according to direction.
 
         Args:
             direction: The direction in which the position changes.
@@ -269,11 +285,7 @@ class Platform(object):
 
 
 class GameState(object):
-    """State containign full information about the game.
-
-    Args:
-        window_width (float): width of game field.
-        window_height (float): height of game field.
+    """State containing full information about the game.
 
     Attributes:
         ball (obj): ball to play the game.
@@ -285,9 +297,17 @@ class GameState(object):
         WIN_SCORE (int): scores to win.
 
     """
+
     WIN_SCORE = 3
 
     def __init__(self, window_width, window_height):
+        """State containing full information about the game.
+
+        Args:
+            window_width (float): width of game field.
+            window_height (float): height of game field.
+
+        """
         self.window_width = window_width
         self.window_height = window_height
         self.current_frame = 0
@@ -295,6 +315,7 @@ class GameState(object):
         self.reset()
 
     def reset(self):
+        """Reset the game."""
         self.reset_ball()
         self.platform1 = Platform(
             pos_x=(self.window_width / 2),
@@ -307,10 +328,11 @@ class GameState(object):
         self.scores = (0, 0)
 
     def reset_ball(self):
+        """Reset tha ball."""
         self.ball = Ball(self.window_width / 2, self.window_height / 2)
 
     def get_current_frame(self):
-        """Returns current frame number.
+        """Return current frame number.
 
         Returns:
             int: Current frame number.
@@ -319,12 +341,36 @@ class GameState(object):
         return self.current_frame
 
     def get_scores(self):
+        """Return scores.
+
+        Returns:
+            scores (tuple): tuple containing:
+                (float): first player score
+                (float): second player score
+
+        """
         return self.scores
 
     def get_wins(self):
+        """Return wins number.
+
+        Returns:
+            wins (tuple): tuple containing:
+                (float): first player wins number
+                (float): second player wins number
+
+        """
         return self.wins
 
     def get_window_size(self):
+        """Return window size.
+
+        Returns:
+            (tuple): tuple containing:
+                window_width (float): window width
+                window_height (float): window height
+
+        """
         return (self.window_width, self.window_height)
 
     def increment_current_frame(self):
@@ -332,7 +378,7 @@ class GameState(object):
         self.current_frame += 1
 
     def get_platform(self, idx):
-        """Returns platform according to given index.
+        """Return platform according to given index.
 
         Args:
             idx: The index of required platform.
@@ -348,7 +394,7 @@ class GameState(object):
             return self.platform2
 
     def get_ball(self):
-        """Returns ball.
+        """Return ball.
 
         Returns:
             Ball.
@@ -360,21 +406,25 @@ class GameState(object):
 class NetworkConnection(object):
     """Class to connect between two players.
 
-    Args:
-        host (str): host name.
-        port (int): port number.
-        timeout (float): timeout in seconds.
-
     Attributes:
         socket (obj): socket to connect.
 
     """
+
     def __init__(self, host: str, port: int, timeout: float = 1.0):
+        """Class to connect between two players.
+
+        Args:
+            host (str): host name.
+            port (int): port number.
+            timeout (float): timeout in seconds.
+
+        """
         self.socket = Socket()
         self.socket.connect(host, port, timeout)
 
     def send(self, frame, data):
-        """Serialzes and sends data.
+        """Serialze and send data.
 
         Args:
             frame (int): Frame number.
@@ -384,7 +434,7 @@ class NetworkConnection(object):
         self.socket.send(serialize((frame, data)))
 
     def read(self):
-        """Deserialzes and reads data.
+        """Deserialze and read data.
 
         Returns:
             (list): list containing:
@@ -397,20 +447,24 @@ class NetworkConnection(object):
 class StateCache:
     """Cache to keep states in a buffer.
 
-    Args:
-        size (int): number of states to keep.
-
     Attributes:
         size (int): number of states to keep.
         states (list): buffer for states keeping.
 
     """
+
     def __init__(self, size: int):
+        """Cache to keep states in a buffer.
+
+        Args:
+            size (int): number of states to keep.
+
+        """
         self.size = size
         self.states = []
 
     def push(self, state):
-        """Pushes state to buffer.
+        """Pushe state to buffer.
 
         Args:
             state: State to push.
@@ -420,7 +474,7 @@ class StateCache:
         self.__shrink()
 
     def pop(self):
-        """Pops state from buffer.
+        """Pop state from buffer.
 
         Returns:
             State first added to the buffer.
@@ -432,6 +486,6 @@ class StateCache:
         return head
 
     def __shrink(self):
-        """Shrinks states buffer to defined size."""
+        """Shrink states buffer to defined size."""
         starting_index = max(len(self.states) - self.size, 0)
         self.states = self.states[starting_index:]
