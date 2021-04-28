@@ -49,7 +49,8 @@ class GameServer:
                                 client_frame,
                                 self.__player_frames.get(player, 0)
                             )
-                            self.__game_controller.on_input(player, player_input)
+                            self.__game_controller.on_input(player,
+                                                            player_input)
                 except:
                     self.stop()
                     self.__is_broken = True
