@@ -33,6 +33,15 @@ class Games:
 
     def get_all(self) -> List[Tuple[str, GameServer]]:
         """Return a list of pairs `(game id, game)` all games in storage."""
+        games_to_delete = []
+
+        for id in self.__games:
+            game = self.__games[id]
+            if not game.is_running:
+                games_to_delete.append(id)
+
+        for id in games_to_delete:
+            self.remove(id)
         return list(self.__games.items())
 
     def add(self, game: GameServer) -> str:
