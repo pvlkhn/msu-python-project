@@ -228,10 +228,9 @@ class Platform(object):
         """Return box coordinates.
 
         Returns:
-            (tuple): tuple containing:
+            (tuple): Tuple of box borders coordinates.
 
         """
-        # TODO: write returns
         x_tl = x_bl = - Platform.WIDTH / 2
         y_tl = y_tr = - Platform.HEIGHT / 2
         x_tr = x_br = Platform.WIDTH / 2
@@ -437,10 +436,9 @@ class NetworkConnection(object):
         """Deserialze and read data.
 
         Returns:
-            (list): list containing:
+            (list): List of deserialized messages.
 
         """
-        # TODO: write returns
         return [deserialize(e) for e in poll(self.socket.recv)]
 
 
