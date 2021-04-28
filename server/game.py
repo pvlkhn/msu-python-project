@@ -1,3 +1,5 @@
+"""Module defines `GameServer` class."""
+
 import threading
 import time
 
@@ -9,7 +11,7 @@ from client.controller import GameLogicController
 
 
 class GameServer:
-    """Class representing a pong game server"""
+    """Class representing a pong game server."""
 
     DEFAULT_SETTINGS = {
         "name": "yet another game",
@@ -17,7 +19,7 @@ class GameServer:
     }
 
     def __init__(self, settings: dict):
-        """Creates a new game server
+        """Create a new game server.
 
         :param settings: a dictionary with arbitrary game settings
         """
@@ -62,14 +64,14 @@ class GameServer:
                 sock.send(message)
 
     def start(self) -> None:
-        """Starts server in separate thread
+        """Start server in separate thread.
 
         :return: `None`
         """
         self.__thread.start()
 
     def run(self):
-        """Runs server in current thread, returns when the game ends
+        """Run server in current thread, returns when the game ends.
 
         :return: `None`
         """
@@ -86,11 +88,15 @@ class GameServer:
             time.sleep(update_interval - extra_time)
 
     def stop(self) -> None:
-        """Stops server running in separate thread
+        """Stop server running in separate thread.
 
         :return: `None`
         """
         self.is_running = False
 
     def get_num_players_connected(self) -> int:
+        """Return the number of players currently connected.
+
+        :return: number of connected players, int
+        """
         return len(self.__player_sockets)
