@@ -34,3 +34,14 @@ jobs:
           checkName: 'flake8_py3'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: run pytest
+        run: |
+          pip3 install -r requirements.txt
+          pip3 install pytest
+          python3 -m pytest

@@ -30,23 +30,30 @@ class GameServer:
         self.__player_frames = {}
         self.__game_controller = GameLogicController(GameState(800, 600))
         self.__thread = threading.Thread(target=self.run)
+        self.__num_play_ticks = 0
         self.port = self.__listener.get_port()
 
     def __on_tick(self):
-        self.__player_sockets.extend(poll(self.__listener.accept))
-        for player, sock in enumerate(self.__player_sockets):
-            for event in poll(sock.recv):
-                client_frame, player_input = deserialize(event)
-                self.__player_frames[player] = max(
-                    client_frame,
-                    self.__player_frames.get(player, 0)
-                )
-                self.__game_controller.on_input(player, player_input)
-        self.__game_controller.on_tick()
-        state = self.__game_controller.game_state
-        for player, sock in enumerate(self.__player_sockets):
-            message = serialize((self.__player_frames.get(player, 0), state))
-            sock.send(message)
+        if len(self.__player_sockets) < 2:
+            self.__player_sockets.extend(poll(self.__listener.accept))
+        else:
+            self.__num_play_ticks += 1
+            self.__player_sockets = self.__player_sockets
+            for player, sock in enumerate(self.__player_sockets):
+                for event in poll(sock.recv):
+                    if self.__num_play_ticks > 1:
+                        client_frame, player_input = deserialize(event)
+                        self.__player_frames[player] = max(
+                            client_frame,
+                            self.__player_frames.get(player, 0)
+                        )
+                        self.__game_controller.on_input(player, player_input)
+            self.__game_controller.on_tick()
+            state = self.__game_controller.game_state
+            for player, sock in enumerate(self.__player_sockets):
+                message = serialize((self.__player_frames.get(player, 0),
+                                     state))
+                sock.send(message)
 
     def start(self) -> None:
         """Starts server in separate thread
@@ -78,3 +85,6 @@ class GameServer:
         :return: `None`
         """
         self.is_running = False
+
+    def get_num_players_connected(self) -> int:
+        return len(self.__player_sockets)

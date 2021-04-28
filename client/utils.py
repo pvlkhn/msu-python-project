@@ -1,4 +1,22 @@
+import os
+import pkg_resources
 from math import sin, cos, acos
+from babel.support import Translations
+
+
+def load_translations():
+    localizations_dir = pkg_resources.resource_filename(
+        package_or_requirement='client',
+        resource_name='localization'
+    )
+    return Translations.load(
+        dirname=localizations_dir,
+        locales=[os.getenv('LC_LANGUAGE'), 'en_US']
+    )
+
+
+def gettext(text, translations=load_translations()):
+    return translations.gettext(text)
 
 
 def clip(value, value_min, value_max):
@@ -28,7 +46,7 @@ def normal(a, b, x, y):
 
 def intersect(a, b, c, a1, b1, c1):
     if abs(a * b1 - a1 * b) < 1e-10:
-        raise ValueError("Lines are parallel!")
+        raise ValueError(gettext("Lines are parallel!"))
     x = (c1 * b - c * b1) / (a * b1 - a1 * b)
     y = (a1 * c - a * c1) / (a * b1 - a1 * b)
     return x, y
