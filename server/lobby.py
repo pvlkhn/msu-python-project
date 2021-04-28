@@ -85,7 +85,8 @@ class LobbyServer(Flask):
         @self.route("/games/")
         def get_all_games():
             return {g_id: get_game(g_id) for g_id, game in self.games.get_all()
-                    if game.get_num_players_connected() < 2 and game.is_running}
+                    if (game.get_num_players_connected() < 2 and
+                        game.is_running)}
 
         @self.route("/games/<game_id>/")
         def get_game(game_id):
