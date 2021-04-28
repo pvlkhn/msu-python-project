@@ -48,7 +48,8 @@ class GameServer:
             self.__game_controller.on_tick()
             state = self.__game_controller.game_state
             for player, sock in enumerate(self.__player_sockets):
-                message = serialize((self.__player_frames.get(player, 0), state))
+                message = serialize((self.__player_frames.get(player, 0),
+                                     state))
                 sock.send(message)
 
     def start(self) -> None:
