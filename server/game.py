@@ -31,6 +31,7 @@ class GameServer:
         self.__game_controller = GameLogicController(GameState(800, 600))
         self.__thread = threading.Thread(target=self.run)
         self.__num_play_ticks = 0
+        self.__is_broken = False
         self.port = self.__listener.get_port()
 
     def __on_tick(self):
@@ -40,14 +41,20 @@ class GameServer:
             self.__num_play_ticks += 1
             self.__player_sockets = self.__player_sockets
             for player, sock in enumerate(self.__player_sockets):
-                for event in poll(sock.recv):
-                    if self.__num_play_ticks > 1:
-                        client_frame, player_input = deserialize(event)
-                        self.__player_frames[player] = max(
-                            client_frame,
-                            self.__player_frames.get(player, 0)
-                        )
-                        self.__game_controller.on_input(player, player_input)
+                try:
+                    for event in poll(sock.recv):
+                        if self.__num_play_ticks > 1:
+                            client_frame, player_input = deserialize(event)
+                            self.__player_frames[player] = max(
+                                client_frame,
+                                self.__player_frames.get(player, 0)
+                            )
+                            self.__game_controller.on_input(player, player_input)
+                except:
+                    self.stop()
+                    self.__is_broken = True
+                    self.__player_sockets = []
+
             self.__game_controller.on_tick()
             state = self.__game_controller.game_state
             for player, sock in enumerate(self.__player_sockets):
@@ -88,3 +95,6 @@ class GameServer:
 
     def get_num_players_connected(self) -> int:
         return len(self.__player_sockets)
+
+    def is_broken(self):
+        return self.__is_broken
