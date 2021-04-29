@@ -13,7 +13,6 @@ setup(
     include_package_data=True,
     install_requires=requirements,
     version=version,
-    url='https:///github.com/pvlkhn/msu-python-project',
     entry_points={
         'console_scripts': [
             'csmsu2020_pong_game=client.__main__:main',
