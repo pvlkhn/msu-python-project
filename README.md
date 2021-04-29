@@ -7,13 +7,17 @@
 
 ![Gif](https://github.com/pvlkhn/msu-python-project/blob/gif/test/%D0%93%D0%B8%D1%84%D0%BA%D0%B0.gif)
 
+## Установка
+
+Последний релиз: pip install csmsu2020_pong_game
+Dev-версия: pip install git+https://github.com/pvlkhn/msu-python-project/
+
 ## Запуск игры
 
-python -m server
+Запуск сервера: csmsu2020_pong_server
 
-Для каждого из двух игроков:
+Для каждого из двух игроков: csmsu2020_pong_game
+Для запуска в другой локализации нужно установить переменную окружения LC_LANGUAGE
 
-python -m client
-
-В появившемся стартовом окне: "Create game", затем выбрать появившуюся игру и назать "Join game". Для второго игрока "Join game", выбрав ту же игру, что и первый игрок (при её отсутствии нажать "Refresh"). Игра не начнется, пока оба игрока не войдут в неё.
+В появившемся стартовом окне: "Create game", затем выбрать появившуюся игру и нажать "Join game". Для второго игрока "Join game", выбрав ту же игру, что и первый игрок (при её отсутствии нажать "Refresh"). Игра не начнется, пока оба игрока не войдут в неё.
 ![Start](https://github.com/pvlkhn/msu-python-project/blob/gif/test/Start.png)
