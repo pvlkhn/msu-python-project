@@ -128,8 +128,13 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'csmsu2020_pong_game.tex', u'csmsu2020\\_pong\\_game Documentation',
-     u'csmsu', 'manual'),
+    (
+        master_doc,
+        'csmsu2020_pong_game.tex',
+        u'csmsu2020\\_pong\\_game Documentation',
+        u'csmsu',
+        'manual'
+    ),
 ]
 
 
